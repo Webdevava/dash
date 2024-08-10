@@ -6,7 +6,7 @@ const page = () => {
   return (
     <div className="flex flex-col justify-center items-center gap-12 p-4">
       <img
-        src="https://img.freepik.com/free-vector/abstract-blue-technology-background_23-2149352058.jpg?w=1060&t=st=1723230659~exp=1723231259~hmac=37f630cf5978cecc658291b2a096b3932d2462c112bed56bbcff071cb70b5fb0"
+        src="https://github.com/Webdevava/dash/blob/main/src/assets/bg.jpg?raw=true"
         className=" fixed -z-50 h-96 w-screen top-0"
       />
       <div className="flex justify-between gap-4 items-center flex-col lg:flex-row max-w-[95%]">
