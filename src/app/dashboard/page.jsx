@@ -30,7 +30,7 @@ const page = () => {
         <p className="max-w-[72vw] w-full text-start text-lg mb-4 text-[#1f1f1f] font-semibold">
           All Alarms
         </p>
-        <div className="max-w-[72vw] p-4 bg-gradient-to-r from-blue-400 to-pink-400 flex justify-center items-center border border-border rounded-3xl">
+        <div className="max-w-[72vw] p-4 bg-gradient-to-r from-blue-200 to-pink-200 flex justify-center items-center border border-border rounded-3xl">
           <AlertSlider />
         </div>
       </div>
