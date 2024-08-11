@@ -151,7 +151,7 @@ const MeterStatistics = () => {
   ];
 
   return (
-    <div className="p-6 shadow-md bg-[#fefefe] rounded-3xl w-full h-full lg:h-[28rem]">
+    <div className="p-6 shadow-md bg-[#fefefe] rounded-3xl w-full h-full">
       <div className="flex justify-start mb-4 gap-1">
         {meterButtons.map((meter) => (
           <div

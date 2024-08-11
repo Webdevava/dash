@@ -69,7 +69,7 @@ const MeterLocationMap = () => {
   };
 
   return (
-    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full h-[28rem]">
+    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full h-full">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex flex-grow items-center bg-white shadow-md rounded-3xl">
           <input
@@ -151,7 +151,7 @@ const MeterLocationMap = () => {
         center={[18.7357, -70.1627]} // Centered on Dominican Republic
         zoom={7}
         style={{
-          height: "360px",
+          height: "87%",
           width: "100%",
           zIndex: 1,
           borderRadius: "20px",
