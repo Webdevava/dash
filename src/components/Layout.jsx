@@ -13,7 +13,7 @@ export default function Layout({ children }) {
         </div>
         <div className="flex-1 flex flex-col">
           <MobileMenu />
-          <main className="flex-1 overflow-y-auto mt-16 p-4">{children}</main>
+          <main className="flex-1 overflow-y-auto mt-2 p-4">{children}</main>
         </div>
       </div>
     </div>

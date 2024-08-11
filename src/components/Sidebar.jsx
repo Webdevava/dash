@@ -37,7 +37,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
 
   const sidebarContent = (
     <motion.div
-      className={`h-[91vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl rounded-r-3xl p-3 relative mt-16 ${
+      className={`h-[91vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl  p-3 relative mt-[4.5rem] ${
         isMobile || isExpanded ? "w-64" : "w-16"
       } transition-all duration-300 ease-in-out`}
       initial={false}
@@ -45,7 +45,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
     >
       {!isMobile && (
         <motion.button
-          className={`absolute top-20 p-1 rounded-xl bg-[#fefefe] text-black shadow-md ${
+          className={`absolute top-2 p-1 rounded-xl bg-[#fefefe] text-black shadow-md ${
             isExpanded ? "-right-4" : "-right-3"
           }`}
           onClick={toggleSidebar}
@@ -55,7 +55,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
           {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </motion.button>
       )}
-      <nav className="flex-1">
+      <nav className="flex-1 pt-4">
         <ul className="flex flex-col gap-2">
           {menuItems.map((item) => (
             <li key={item.name}>
@@ -101,12 +101,12 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 left-0 z-50 w-64 shadow-lg"
+            className="fixed inset-y-0 left-0 z-50 w-64"
           >
             {sidebarContent}
             <button
               onClick={onClose}
-              className="absolute top-16 -right-16 p-2 rounded-r-full bg-accent text-black"
+              className="absolute top-16 -right-16 p-2 rounded-full bg-white text-black"
             >
               <X size={24} />
             </button>

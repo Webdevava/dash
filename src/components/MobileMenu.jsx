@@ -11,7 +11,7 @@ const MobileMenu = () => {
     <div className="md:hidden ">
       <button
         onClick={() => setIsMenuOpen(true)}
-        className="fixed top-16 left-0 p-2 rounded-r-full bg-accent text-black z-50"
+        className="fixed top-16 left-0 p-2 rounded-full bg-white text-black z-50"
       >
         <Menu size={24} />
       </button>

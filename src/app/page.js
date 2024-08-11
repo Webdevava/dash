@@ -8,6 +8,7 @@ import {
   AiFillEye,
   AiFillEyeInvisible,
 } from "react-icons/ai";
+import { ChevronDown, User, Lock, Code } from "lucide-react"; // Importing icons
 import indiLogo from "../../public/indiLogo.png";
 
 const Login = () => {
@@ -22,38 +23,57 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-indigo-900 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-3xl shadow-lg w-96 scale-125 relative">
+    <div className="min-h-screen bg-[#6b43a0] flex items-center justify-center">
+      <img
+        src="https://s3-alpha-sig.figma.com/img/d622/0841/ea94935802d687a59cf0ce996f66ac64?Expires=1724025600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p6WJ-ZeJRAVIP5l1EXzLl5zWiaMgfcvv--kTA3kdzbaf8ZS69bmneZX41OByLu-dQMuT6EhHHUzeaT7rB8JaZcTEqK7aIohBvpMr0DFDdaqVhEmuIjQKpDTyZPwa5-BQPdTWZZmMB7lMAovWU3hQ0m8UvAIiGfiI5u7oGaff0-lwZc6aP0LJhe1OL9irjeqqrme3zoIXhaHT87yvD5GiXEx6aPbPdaOui2E2ElssSQHjdMhVMLO3YFwh~V7eEVLMkBHS3EIRXhN5e9cokYngxJRZBq8ydllk70n8OPCUpBO52FZBp~b77ZsXF~-CMjgFz4D16BnaESZqOFQ~o~9hJA__"
+        className="fixed h-[100vh] w-[100vw] scale-105 mix-blend-multiply"
+      />
+      <div className="bg-white p-8 py-10 rounded-3xl shadow-lg w-96 scale-125 relative">
         <div className="flex items-center justify-center mb-6">
-          <Image src={indiLogo} alt="inditronics" width={200} />
+          <Image src={indiLogo} alt="inditronics" width={185} />
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Login</h1>
+          <h1 className="text-2xl font-light">Login</h1>
 
           <div className="relative">
-            <label className="block text-[10px] font-medium text-gray-700 mb-2">
+            <label className="block text-[10px] font-light text-[#0B1C66]">
               Select Role
             </label>
             <div className="relative">
               <button
-                className="w-24 p-2 rounded-3xl bg-accent text-blue-800 font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-32 flex justify-between text-start text-xs py-2 pl-5 pr-3 rounded-3xl bg-[#CFDCFF] text-[#0B1C66] font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onClick={() => setDropdownVisible(!dropdownVisible)}
               >
                 {role}
+                <ChevronDown size={16} className="ml-2" />
               </button>
               {dropdownVisible && (
-                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                  {["Admin", "Executive", "Developer"].map((item) => (
+                <div className="absolute top-full mt-2 left-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                  {[
+                    {
+                      name: "Admin",
+                      icon: <User size={16} className="mr-2" />,
+                    },
+                    {
+                      name: "Executive",
+                      icon: <Lock size={16} className="mr-2" />,
+                    },
+                    {
+                      name: "Developer",
+                      icon: <Code size={16} className="mr-2" />,
+                    },
+                  ].map(({ name, icon }) => (
                     <div
-                      key={item}
-                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      key={name}
+                      className="w-32 flex items-center px-3 py-2 text-xs hover:bg-[#CFDCFF] cursor-pointer"
                       onClick={() => {
-                        setRole(item);
+                        setRole(name);
                         setDropdownVisible(false);
                       }}
                     >
-                      {item}
+                      {icon}
+                      {name}
                     </div>
                   ))}
                 </div>
@@ -63,20 +83,20 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleLogin}>
-          <div className="mb-4 relative text-sm">
+          <div className="mb-5 relative text-sm">
             <AiOutlineMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
             <input
               type="email"
               placeholder="Email address"
-              className="w-full p-2 pl-10 bg-accent/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-xs font-light p-2 py-3 pl-10 bg-accent/30 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <div className="mb-2 relative text-sm">
+          <div className="relative text-sm">
             <AiOutlineLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
             <input
               type={passwordVisible ? "text" : "password"}
               placeholder="Password"
-              className="w-full p-2 pl-10 rounded-2xl bg-accent/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-xs font-light p-2 py-3 pl-10 rounded-3xl bg-accent/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <span
               className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -92,7 +112,7 @@ const Login = () => {
           <div className="text-right mb-6">
             <a
               href="#"
-              className="text-xs text-blue-500 hover:text-blue-700 transition duration-300"
+              className="text-[10px] -mr-2 font-bold text-blue-500 hover:text-blue-700 transition duration-300"
             >
               Forgot password?
             </a>
@@ -100,7 +120,7 @@ const Login = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-blue-800 text-white px-16 py-2 rounded-3xl w-fit hover:bg-blue-900 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="bg-[#2054DD] text-white mt-2 px-16 py-2 font-bold rounded-3xl w-fit hover:bg-blue-900 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               Login
             </button>

@@ -22,6 +22,7 @@ ChartJS.register(
 
 const MeterStatistics = () => {
   const [activeButton, setActiveButton] = useState("Installed");
+  const [activeMeter, setActiveMeter] = useState("All"); // Default to APM1
 
   const getRandomValue = () => Math.floor(Math.random() * 301);
 
@@ -50,64 +51,59 @@ const MeterStatistics = () => {
     },
   };
 
-  console.log(chartData);
-
-
-  // const chartData = {
-  //   Installed: {
-  //     APM1: [105, 165, 250, 110, 105, 105],
-  //     APM2: [160, 250, 80, 150, 160, 160],
-  //     APM3: [95, 145, 285, 50, 95, 95],
-  //   },
-  //   Connected: {
-  //     APM1: [90, 140, 220, 100, 95, 100],
-  //     APM2: [140, 230, 70, 130, 150, 150],
-  //     APM3: [85, 130, 260, 45, 90, 90],
-  //   },
-  //   "EOD Received": {
-  //     APM1: [80, 130, 200, 90, 85, 90],
-  //     APM2: [130, 210, 60, 120, 140, 140],
-  //     APM3: [75, 120, 240, 40, 80, 80],
-  //   },
-  //   "Installed Household": {
-  //     APM1: [100, 155, 240, 105, 100, 100],
-  //     APM2: [150, 240, 75, 140, 155, 155],
-  //     APM3: [90, 140, 275, 48, 90, 90],
-  //   },
-  // };
+  // Function to get data for all meters
+  const getAllMetersData = () => {
+    return {
+      APM1: chartData[activeButton].APM1,
+      APM2: chartData[activeButton].APM2,
+      APM3: chartData[activeButton].APM3,
+    };
+  };
 
   const data = {
     labels: ["29 Jan", "12 Feb", "26 Feb", "11 Mar", "25 Mar", "8 Apr"],
-    datasets: [
-      {
-        label: "APM1 Meter",
-        data: chartData[activeButton].APM1,
-        backgroundColor: "#28B7C4",
-        borderRadius: 4,
-        barThickness: 8,
-      },
-      {
-        label: "APM2 Meter",
-        data: chartData[activeButton].APM2,
-        backgroundColor: "#9F5BC1",
-        borderRadius: 4,
-        barThickness: 8,
-      },
-      {
-        label: "APM3 Meter",
-        data: chartData[activeButton].APM3,
-        backgroundColor: "#FFA500",
-        borderRadius: 4,
-        barThickness: 8,
-      },
-    ],
+    datasets:
+      activeMeter === "All"
+        ? [
+            {
+              label: "APM1",
+              data: getAllMetersData().APM1,
+              backgroundColor: "#28B7C4",
+              barThickness: 8,
+            },
+            {
+              label: "APM2",
+              data: getAllMetersData().APM2,
+              backgroundColor: "#9F5BC1",
+              barThickness: 8,
+            },
+            {
+              label: "APM3",
+              data: getAllMetersData().APM3,
+              backgroundColor: "#FFA500",
+              barThickness: 8,
+            },
+          ]
+        : [
+            {
+              label: `${activeMeter} Meter`,
+              data: chartData[activeButton][activeMeter],
+              backgroundColor: {
+                APM1: "#28B7C4",
+                APM2: "#9F5BC1",
+                APM3: "#FFA500",
+              }[activeMeter],
+              borderRadius: 4,
+              barThickness: 8,
+            },
+          ],
   };
 
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: "false",
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -147,27 +143,34 @@ const MeterStatistics = () => {
     "Installed Household",
   ];
 
+  const meterButtons = [
+    { id: "All", label: "All Meters", color: "#6C757D" }, // Add All Meters button
+    { id: "APM1", label: "Total APM1 Meter", color: "#28B7C4" },
+    { id: "APM2", label: "Total APM2 Meter", color: "#9F5BC1" },
+    { id: "APM3", label: "Total APM3 Meter", color: "#FFA500" },
+  ];
+
   return (
     <div className="p-6 shadow-md bg-[#fefefe] rounded-3xl w-full h-full lg:h-[28rem]">
-      <div className="flex justify-between mb-4 gap-1">
-        <div className="flex text-xs items-center space-x-2 bg-[#20b2ab22] rounded-3xl p-2">
-          <span className="w-3 h-3 bg-[#28B7C4] rounded-full"></span>
-          <span className="text-xs flex flex-col">
-            <span className="font-bold">234K+</span>Total APM1 Meter
-          </span>
-        </div>
-        <div className="flex items-center space-x-2 bg-[#DDA0DD22] rounded-3xl p-2">
-          <span className="w-3 h-3 bg-[#9F5BC1] rounded-full"></span>
-          <span className="text-xs flex flex-col">
-            <span className="font-bold">434K+</span> Total APM2 Meter
-          </span>
-        </div>
-        <div className="flex items-center space-x-2 bg-[#FFA50022] rounded-3xl p-2">
-          <span className="w-3 h-3 bg-[#FFA500] rounded-full"></span>
-          <span className="text-xs flex flex-col">
-            <span className="font-bold">540K+</span> Total APM3 Meter
-          </span>
-        </div>
+      <div className="flex justify-start mb-4 gap-1">
+        {meterButtons.map((meter) => (
+          <div
+            key={meter.id}
+            className={`flex text-xs items-center space-x-2 rounded-3xl p-2 ${
+              activeMeter === meter.id ? "bg-muted" : ""
+            }`}
+            onClick={() => setActiveMeter(meter.id)}
+          >
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: meter.color }}
+            ></span>
+            <span className="text-xs flex flex-col">
+              <span className="font-bold">234K+</span>
+              {meter.label}
+            </span>
+          </div>
+        ))}
       </div>
       <div className="flex space-x-4 mb-4 justify-between bg-muted/15 border border-accent p-1 rounded-[500px]">
         {buttons.map((button) => (

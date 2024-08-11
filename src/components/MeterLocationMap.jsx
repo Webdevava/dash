@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Search, Menu, Gauge } from "lucide-react";
+import { Search, Menu, Gauge, Ellipsis, EllipsisVertical } from "lucide-react";
 import L from "leaflet";
 
 // Define custom icons for each meter type with larger size
@@ -22,33 +22,33 @@ const MeterLocationMap = () => {
 
   // Sample data for meter locations in the Dominican Republic with additional markers
   const meterLocations = [
-    { type: "APM1", lat: 18.7357, lng: -70.1627, color: "#20B2AA" },
-    { type: "APM1", lat: 18.5001, lng: -69.9886, color: "#20B2AA" },
-    { type: "APM1", lat: 18.46, lng: -69.927, color: "#20B2AA" },
-    { type: "APM1", lat: 18.71, lng: -70.175, color: "#20B2AA" },
-    { type: "APM1", lat: 18.85, lng: -70.3, color: "#20B2AA" },
-    { type: "APM1", lat: 18.3, lng: -69.85, color: "#20B2AA" },
-    { type: "APM2", lat: 19.0661, lng: -70.5906, color: "#DDA0DD" },
-    { type: "APM2", lat: 18.4718, lng: -69.8923, color: "#DDA0DD" },
-    { type: "APM2", lat: 19.5, lng: -70.6, color: "#DDA0DD" },
-    { type: "APM2", lat: 18.7, lng: -69.85, color: "#DDA0DD" },
-    { type: "APM2", lat: 19.2, lng: -70.2, color: "#DDA0DD" },
-    { type: "APM2", lat: 18.8, lng: -69.95, color: "#DDA0DD" },
-    { type: "APM3", lat: 18.7357, lng: -69.3346, color: "#FFA500" },
-    { type: "APM3", lat: 19.2265, lng: -69.5908, color: "#FFA500" },
-    { type: "APM3", lat: 18.65, lng: -69.3, color: "#FFA500" },
-    { type: "APM3", lat: 19.0, lng: -69.5, color: "#FFA500" },
-    { type: "APM3", lat: 18.8, lng: -69.7, color: "#FFA500" },
-    { type: "APM3", lat: 18.9, lng: -69.6, color: "#FFA500" },
+    { type: "APM1 M", lat: 18.7357, lng: -70.1627, color: "#20B2AA" },
+    { type: "APM1 M", lat: 18.5001, lng: -69.9886, color: "#20B2AA" },
+    { type: "APM1 M", lat: 18.46, lng: -69.927, color: "#20B2AA" },
+    { type: "APM1 M", lat: 18.71, lng: -70.175, color: "#20B2AA" },
+    { type: "APM1 M", lat: 18.85, lng: -70.3, color: "#20B2AA" },
+    { type: "APM1 M", lat: 18.3, lng: -69.85, color: "#20B2AA" },
+    { type: "APM2 M", lat: 19.0661, lng: -70.5906, color: "#DDA0DD" },
+    { type: "APM2 M", lat: 18.4718, lng: -69.8923, color: "#DDA0DD" },
+    { type: "APM2 M", lat: 19.5, lng: -70.6, color: "#DDA0DD" },
+    { type: "APM2 M", lat: 18.7, lng: -69.85, color: "#DDA0DD" },
+    { type: "APM2 M", lat: 19.2, lng: -70.2, color: "#DDA0DD" },
+    { type: "APM2 M", lat: 18.8, lng: -69.95, color: "#DDA0DD" },
+    { type: "APM3 M", lat: 18.7357, lng: -69.3346, color: "#FFA500" },
+    { type: "APM3 M", lat: 19.2265, lng: -69.5908, color: "#FFA500" },
+    { type: "APM3 M", lat: 18.65, lng: -69.3, color: "#FFA500" },
+    { type: "APM3 M", lat: 19.0, lng: -69.5, color: "#FFA500" },
+    { type: "APM3 M", lat: 18.8, lng: -69.7, color: "#FFA500" },
+    { type: "APM3 M", lat: 18.9, lng: -69.6, color: "#FFA500" },
   ];
 
     const dropdownColors = {
-      "Installed APM1": "#20B2AA",
-      "Connected APM1": "#20B2AA",
-      "Installed APM2": "#DDA0DD",
-      "Connected APM2": "#DDA0DD",
-      "Installed APM3": "#FFA500",
-      "Connected APM3": "#FFA500",
+      "Installed APM1 M": "#20B2AA",
+      "Connected APM1 M": "#20B2AA",
+      "Installed APM2 M": "#DDA0DD",
+      "Connected APM2 M": "#DDA0DD",
+      "Installed APM3 M": "#FFA500",
+      "Connected APM3 M": "#FFA500",
     };
 
   const filteredLocations = meterLocations.filter((location) => {
@@ -71,27 +71,27 @@ const MeterLocationMap = () => {
   return (
     <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full h-[28rem]">
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex flex-grow items-center">
+        <div className="flex flex-grow items-center bg-white shadow-md rounded-3xl">
           <input
             type="text"
             placeholder="Search Meter Location"
-            className="w-full p-2 border border-r-0 rounded-l-3xl"
+            className="w-full p-2  rounded-l-3xl text-sm pl-6"
           />
-          <button className="border border-border border-l-0 p-2 rounded-r-3xl">
+          <button className=" p-2 rounded-r-3xl text-[#2054DD]">
             <Search />
           </button>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex text-xs space-x-2">
-            {["APM1", "APM2", "APM3"].map((meter) => (
+            {["APM1 M", "APM2 M", "APM3 M"].map((meter) => (
               <div
                 key={meter}
-                className={`flex items-center space-x-2 p-2 rounded-3xl shadow-md cursor-pointer ${
+                className={`flex items-center space-x-1 py-2 px-1 rounded-3xl shadow-md cursor-pointer ${
                   selectedMeter === meter ? "ring-2 ring-offset-2" : ""
                 } ${
-                  meter === "APM1"
+                  meter === "APM1 M"
                     ? "bg-[#20B2AA22]"
-                    : meter === "APM2"
+                    : meter === "APM2 M"
                     ? "bg-[#DDA0DD22]"
                     : "bg-[#FFA50022]"
                 }`}
@@ -100,15 +100,15 @@ const MeterLocationMap = () => {
                 }
               >
                 <span
-                  className={`h-4 w-4 rounded-full ${
-                    meter === "APM1"
+                  className={`h-2 w-2 rounded-full ${
+                    meter === "APM1 M"
                       ? "bg-[#20B2AA]"
-                      : meter === "APM2"
+                      : meter === "APM2 M"
                       ? "bg-[#DDA0DD]"
                       : "bg-[#FFA500]"
                   }`}
                 ></span>
-                <span className="text-xs font-semibold">{meter}</span>
+                <span className="text-[10px] font-semibold">{meter}</span>
               </div>
             ))}
           </div>
@@ -116,24 +116,24 @@ const MeterLocationMap = () => {
           <div className="relative">
             <button
               onClick={handleDropdownClick}
-              className="flex items-center p-2 border border-gray-300 rounded-full"
+              className="flex items-center p-1  rounded-full shadow-md"
             >
-              <Menu />
+              <EllipsisVertical size={20} />
             </button>
             {showDropdown && (
               <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                 <ul className="p-2 space-y-1">
                   {[
-                    "Installed APM1",
-                    "Connected APM1",
-                    "Installed APM2",
-                    "Connected APM2",
-                    "Installed APM3",
-                    "Connected APM3",
+                    "Installed APM1 M",
+                    "Connected APM1 M",
+                    "Installed APM2 M",
+                    "Connected APM2 M",
+                    "Installed APM3 M",
+                    "Connected APM3 M",
                   ].map((option) => (
                     <li
                       key={option}
-                      className={`p-2 cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
+                      className={`p-2 text-xs cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
                       style={{ color: dropdownColors[option] }}
                       onClick={() => handleDropdownOptionClick(option)}
                     >

@@ -21,8 +21,8 @@ const Topbar = () => {
   };
 
   return (
-    <div className="flex fixed w-full p-3 justify-between h-fit z-50 bg-[#fefefe] text-[#1f1f1f] shadow-md">
-      <Image src={indiLogo} alt="inditronics" width={120} />
+    <div className="flex border-b border-gray-300 fixed w-full p-3 justify-between h-fit z-50 bg-[#fefefe] text-[#1f1f1f] shadow-sm">
+      <Image src={indiLogo} alt="inditronics" width={160} />
 
       <div className="flex items-center gap-8">
         <div className="flex items-center space-x-4 gap-4">
