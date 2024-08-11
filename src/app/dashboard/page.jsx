@@ -1,7 +1,16 @@
-import AlertDashboard from "@/components/AlertDashboard";
-import MeterStatistics from "@/components/MeterStatistics";
-import MeterLocationMap from "@/components/MeterLocationMap";
-import Layout from "@/components/Layout";
+import dynamic from "next/dynamic";
+
+const MeterStatistics = dynamic(() => import("@/components/MeterStatistics"), {
+  ssr: false,
+});
+const MeterLocationMap = dynamic(
+  () => import("@/components/MeterLocationMap"),
+  { ssr: false }
+);
+const AlertDashboard = dynamic(() => import("@/components/AlertDashboard"), {
+  ssr: false,
+});
+const Layout = dynamic(() => import("@/components/Layout"), { ssr: false });
 
 const page = () => {
   return (
@@ -12,7 +21,6 @@ const page = () => {
             <p className="w-full text-lg mb-4  font-semibold">
               All Devices Status
             </p>
-            {/* <MyBarChart /> */}
             <MeterStatistics />
           </div>
           <div className="flex flex-col items-center justify-center w-[36rem] ">
