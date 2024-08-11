@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, Gauge } from "lucide-react";
 import L from "leaflet";
 
 // Define custom icons for each meter type with larger size
 const createCustomIcon = (color) => {
   return L.divIcon({
     className: "custom-icon",
-    html: `<div style="background-color: ${color}; width: 15px; height: 15px; border-radius: 50%;"></div>`,
+    html: `<div style="background-color: ${color}; width: 15px; height: 15px; border-radius: 50%; border: 2px solid black;"></div>`, // Added border for visibility
     iconSize: [15, 15],
     iconAnchor: [7.5, 7.5],
   });
@@ -41,6 +41,15 @@ const MeterLocationMap = () => {
     { type: "APM3", lat: 18.8, lng: -69.7, color: "#FFA500" },
     { type: "APM3", lat: 18.9, lng: -69.6, color: "#FFA500" },
   ];
+
+    const dropdownColors = {
+      "Installed APM1": "#20B2AA",
+      "Connected APM1": "#20B2AA",
+      "Installed APM2": "#DDA0DD",
+      "Connected APM2": "#DDA0DD",
+      "Installed APM3": "#FFA500",
+      "Connected APM3": "#FFA500",
+    };
 
   const filteredLocations = meterLocations.filter((location) => {
     return (
@@ -77,32 +86,33 @@ const MeterLocationMap = () => {
             {["APM1", "APM2", "APM3"].map((meter) => (
               <div
                 key={meter}
-                className={`flex text-xs items-center space-x-2 bg-[${
-                  meter === "APM1"
-                    ? "#20b2ab22"
-                    : meter === "APM2"
-                    ? "#DDA0DD22"
-                    : "#FFA50022"
-                }] rounded-3xl p-2 shadow-md cursor-pointer ${
+                className={`flex items-center space-x-2 p-2 rounded-3xl shadow-md cursor-pointer ${
                   selectedMeter === meter ? "ring-2 ring-offset-2" : ""
+                } ${
+                  meter === "APM1"
+                    ? "bg-[#20B2AA22]"
+                    : meter === "APM2"
+                    ? "bg-[#DDA0DD22]"
+                    : "bg-[#FFA50022]"
                 }`}
                 onClick={() =>
                   setSelectedMeter(selectedMeter === meter ? "all" : meter)
                 }
               >
                 <span
-                  className={`w-3 h-3 bg-[${
+                  className={`h-4 w-4 rounded-full ${
                     meter === "APM1"
-                      ? "#20B2AA"
+                      ? "bg-[#20B2AA]"
                       : meter === "APM2"
-                      ? "#DDA0DD"
-                      : "#FFA500"
-                  }] rounded-full`}
+                      ? "bg-[#DDA0DD]"
+                      : "bg-[#FFA500]"
+                  }`}
                 ></span>
                 <span className="text-xs font-semibold">{meter}</span>
               </div>
             ))}
           </div>
+
           <div className="relative">
             <button
               onClick={handleDropdownClick}
@@ -114,9 +124,6 @@ const MeterLocationMap = () => {
               <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                 <ul className="p-2 space-y-1">
                   {[
-                    "all",
-                    "installed",
-                    "connected",
                     "Installed APM1",
                     "Connected APM1",
                     "Installed APM2",
@@ -126,9 +133,11 @@ const MeterLocationMap = () => {
                   ].map((option) => (
                     <li
                       key={option}
-                      className="p-2 cursor-pointer hover:bg-gray-100"
+                      className={`p-2 cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
+                      style={{ color: dropdownColors[option] }}
                       onClick={() => handleDropdownOptionClick(option)}
                     >
+                      <Gauge size={20} />
                       {option}
                     </li>
                   ))}
