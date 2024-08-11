@@ -86,7 +86,7 @@ const MeterLocationMap = () => {
             {["APM1 M", "APM2 M", "APM3 M"].map((meter) => (
               <div
                 key={meter}
-                className={`flex items-center space-x-1 py-2 px-1 rounded-3xl shadow-md cursor-pointer ${
+                className={`flex items-center space-x-1 py-2 px-1 rounded-3xl truncate shadow-md cursor-pointer ${
                   selectedMeter === meter ? "ring-2 ring-offset-2" : ""
                 } ${
                   meter === "APM1 M"

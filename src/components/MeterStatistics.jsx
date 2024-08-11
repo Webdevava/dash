@@ -156,7 +156,7 @@ const MeterStatistics = () => {
         {meterButtons.map((meter) => (
           <div
             key={meter.id}
-            className={`flex text-xs items-center space-x-2 rounded-3xl p-2 ${
+            className={`flex text-xs items-center gap-1 rounded-3xl p-2 ${
               activeMeter === meter.id ? "bg-muted" : ""
             }`}
             onClick={() => setActiveMeter(meter.id)}
@@ -165,7 +165,7 @@ const MeterStatistics = () => {
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: meter.color }}
             ></span>
-            <span className="text-xs flex flex-col">
+            <span className="text-xs flex flex-col truncate">
               <span className="font-bold">234K+</span>
               {meter.label}
             </span>
@@ -176,7 +176,7 @@ const MeterStatistics = () => {
         {buttons.map((button) => (
           <button
             key={button}
-            className={`text-xs px-4 py-1 rounded-[500px] ${
+            className={`text-xs px-4 py-1 rounded-[500px] truncate ${
               activeButton === button
                 ? "bg-primary text-white"
                 : "text-gray-600"

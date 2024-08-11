@@ -16,7 +16,7 @@ import "slick-carousel/slick/slick-theme.css";
 const AlarmCard = ({ icon, title, time, color }) => (
   <div
     style={{ backgroundColor: `${color}20` }}
-    className="p-2 w-full lg:w-52 rounded-lg h-28 mx-2  flex justify-between items-"
+    className="p-2 w-full w-4/5 rounded-lg h-28 mx-2  flex justify-between items-"
   >
     <div className="flex items-center space-x-3">
       <div className="gap-2">
@@ -157,12 +157,12 @@ const AlarmDashboard = () => {
             }`}
             onClick={() => setFilter("generated")}
           >
-            <span className="w-3 h-3 bg-[#3e4cc3] rounded-full"></span>
+            <span className="w-3 h-3 bg-[#32ADE6] rounded-full"></span>
             <span className="text-sm font-semibold">Generated</span>
           </div>
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${
-              filter === "pending" ? "ring-2 ring-[#FFA500]" : ""
+              filter === "pending" ? "ring-2 ring-[#FFB800]" : ""
             }`}
             onClick={() => setFilter("pending")}
           >
@@ -171,7 +171,7 @@ const AlarmDashboard = () => {
           </div>
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${
-              filter === "resolved" ? "ring-2 ring-[#22c55e]" : ""
+              filter === "resolved" ? "ring-2 ring-[#34C759]" : ""
             }`}
             onClick={() => setFilter("resolved")}
           >
@@ -191,7 +191,7 @@ const AlarmDashboard = () => {
       <div className="bg-white rounded-2xl  p-2 w-full min-w-96 max-w-[75vw]">
         <Slider {...settings}>
           {filteredAlarms.map((alarm, index) => (
-            <AlarmCard key={index} {...alarm}/>
+            <AlarmCard key={index} {...alarm} />
           ))}
         </Slider>
       </div>
