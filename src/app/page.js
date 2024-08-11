@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import indiLogo from "../../public/indiLogo.png";
+import Image from "next/image";
 
 const Login = () => {
   const [role, setRole] = useState("Admin");
@@ -15,11 +17,7 @@ const Login = () => {
     <div className="min-h-screen bg-indigo-900 flex items-center justify-center">
       <div className="bg-white p-8 rounded-3xl shadow-lg w-96">
         <div className="flex items-center justify-center mb-6">
-          <img
-            src="https://static.wixstatic.com/media/abf3bf_155dcf18312d44fbb8c99405fe6446d0~mv2.png/v1/crop/x_164,y_104,w_752,h_769/fill/w_136,h_139,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Untitled%20design%20(8)%20(1).png"
-            alt="Inditronics Logo"
-            width={75}
-          />
+          <Image src={indiLogo} alt="inditronics" width={120} />
         </div>
 
         <div className="flex justify-between items-center mb-6">
