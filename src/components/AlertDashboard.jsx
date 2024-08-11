@@ -16,7 +16,7 @@ import "slick-carousel/slick/slick-theme.css";
 const AlarmCard = ({ icon, title, time, color }) => (
   <div
     style={{ backgroundColor: `${color}20` }}
-    className="p-4 w-64 rounded-lg h-32 m-3  flex justify-between items-center"
+    className="p-2 w-full lg:w-52 rounded-lg h-28 mx-2  flex justify-between items-"
   >
     <div className="flex items-center space-x-3">
       <div className="gap-2">
@@ -27,9 +27,9 @@ const AlarmCard = ({ icon, title, time, color }) => (
     </div>
     <div
       style={{ backgroundColor: color }}
-      className="text-[#fefefe] text-3xl rounded-full p-2"
+      className="text-[#fefefe] h-fit text-3xl rounded-full p-2"
     >
-      <BellRing size={36} className="-rotate-12" />
+      <BellRing size={28} className="-rotate-12" />
     </div>
   </div>
 );
@@ -109,7 +109,7 @@ const AlarmDashboard = () => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     responsive: [
       {
@@ -171,10 +171,10 @@ const AlarmDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-4 w-full min-w-96 max-w-[75vw]">
+      <div className="bg-white rounded-2xl  p-2 w-full min-w-96 max-w-[75vw]">
         <Slider {...settings}>
           {filteredAlarms.map((alarm, index) => (
-            <AlarmCard key={index} {...alarm} />
+            <AlarmCard key={index} {...alarm}/>
           ))}
         </Slider>
       </div>
