@@ -16,7 +16,7 @@ import "slick-carousel/slick/slick-theme.css";
 const AlarmCard = ({ icon, title, time, color }) => (
   <div
     style={{ backgroundColor: `${color}20` }}
-    className="p-2 w-full w-4/5 rounded-lg h-28 mx-2  flex justify-between items-"
+    className="p-2  w-4/5 rounded-lg h-28 mx-2  flex justify-between items-"
   >
     <div className="flex items-center space-x-3">
       <div className="gap-2">
