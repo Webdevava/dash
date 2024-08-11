@@ -19,10 +19,10 @@ import {
 const menuItems = [
   { icon: PanelsTopLeft, name: "My Dashboard", path: "/dashboard" },
   { icon: Package, name: "Assets Management", path: "/assets-management" },
-  { icon: Radio, name: "Live Monitoring of Meters", path: "/live-monitoring" },
-  { icon: Gauge, name: "Meter Management", path: "/meter-management" },
-  { icon: FileCog, name: "List Management", path: "/list-management" },
-  { icon: Users, name: "User Management", path: "/user-management" },
+  { icon: Radio, name: "Live Monitoring of Meters", path: "#" },
+  { icon: Gauge, name: "Meter Management", path: "#" },
+  { icon: FileCog, name: "List Management", path: "#" },
+  { icon: Users, name: "User Management", path: "#" },
 ];
 
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
@@ -37,7 +37,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
 
   const sidebarContent = (
     <motion.div
-      className={`h-screen bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl rounded-3xl p-3 relative ${
+      className={`h-[91vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl rounded-r-3xl p-3 relative mt-16 ${
         isMobile || isExpanded ? "w-64" : "w-16"
       } transition-all duration-300 ease-in-out`}
       initial={false}
@@ -55,25 +55,6 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
           {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </motion.button>
       )}
-      <div className="flex items-center mt-4 mb-8">
-        <img
-          src="https://static.wixstatic.com/media/abf3bf_155dcf18312d44fbb8c99405fe6446d0~mv2.png/v1/crop/x_164,y_104,w_752,h_769/fill/w_136,h_139,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Untitled%20design%20(8)%20(1).png"
-          alt="inditronics"
-          className={`${
-            isMobile || isExpanded ? "w-12 h-12" : "w-10 h-10"
-          } transition-all duration-300`}
-        />
-        {(isMobile || isExpanded) && (
-          <motion.p
-            className="text-xl font-bold ml-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            Inditronics
-          </motion.p>
-        )}
-      </div>
       <nav className="flex-1">
         <ul className="flex flex-col gap-2">
           {menuItems.map((item) => (
@@ -84,7 +65,14 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
                     pathname === item.path ? "bg-accent font-bold" : ""
                   }`}
                 >
-                  <item.icon size={30} className="bg-primary p-1 rounded-xl" />
+                  <item.icon
+                    size={30}
+                    className={`p-1 rounded-2xl ${
+                      pathname === item.path
+                        ? "bg-primary text-[#d1d1d1]"
+                        : "bg-gray-300 text-gray-800"
+                    }`}
+                  />
                   {(isMobile || isExpanded) && (
                     <motion.span
                       className="ml-4 truncate"
@@ -113,12 +101,12 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-y-0 left-0 z-50 w-64 bg-[#fefefe] shadow-lg"
+            className="fixed inset-y-0 left-0 z-50 w-64 shadow-lg"
           >
             {sidebarContent}
             <button
               onClick={onClose}
-              className="absolute top-0 -right-10 p-2 rounded-full bg-accent text-black"
+              className="absolute top-16 -right-16 p-2 rounded-r-full bg-accent text-black"
             >
               <X size={24} />
             </button>

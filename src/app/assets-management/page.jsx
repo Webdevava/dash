@@ -1,10 +1,11 @@
+import Layout from '@/components/Layout'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>
-      assets management
-    </div>
+    <Layout>
+      
+    </Layout>
   )
 }
 

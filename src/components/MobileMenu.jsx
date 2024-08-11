@@ -8,7 +8,7 @@ const MobileMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden ">
       <button
         onClick={() => setIsMenuOpen(true)}
         className="fixed top-16 left-0 p-2 rounded-r-full bg-accent text-black z-50"
