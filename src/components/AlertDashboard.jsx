@@ -160,8 +160,8 @@ const settings = {
 
 
   return (
-    <div className="flex flex-col items-center justify-center w-[96%]">
-      <div className="w-full max-w-7xl flex flex-col sm:flex-row items-center justify-between text-lg mb-4 text-[#1f1f1f] font-semibold px-4">
+    <div className="flex flex-col items-center justify-center w-[100%]">
+      <div className="w-full  flex flex-col sm:flex-row items-center justify-between text-lg mb-4 text-[#1f1f1f] font-semibold px-4">
         <p className="text-xl font-extrabold mb-2 sm:mb-0">All Meter Alarms</p>
         <div className="flex flex-wrap justify-center sm:justify-end text-xs gap-2">
           <div
@@ -201,7 +201,7 @@ const settings = {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-2 w-full max-w-7xl">
+      <div className="bg-white rounded-2xl p-2 w-full ">
         <Slider {...settings}>
           {filteredAlarms.map((alarm, index) => (
             <AlarmCard key={index} {...alarm} />
