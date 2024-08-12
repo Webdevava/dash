@@ -37,7 +37,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
 
   const sidebarContent = (
     <motion.div
-      className={`h-[91vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl  p-3 relative mt-[4.5rem] ${
+      className={`h-[93vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl  p-3 relative mt-[4.5rem] ${
         isMobile || isExpanded ? "w-64" : "w-16"
       } transition-all duration-300 ease-in-out`}
       initial={false}
