@@ -144,10 +144,25 @@ const MeterStatistics = () => {
   ];
 
   const meterButtons = [
-    { id: "All", label: "All Meters", color: "#6C757D" }, // Add All Meters button
-    { id: "APM1", label: "Total APM1 Meter", color: "#28B7C4" },
-    { id: "APM2", label: "Total APM2 Meter", color: "#9F5BC1" },
-    { id: "APM3", label: "Total APM3 Meter", color: "#FFA500" },
+    { id: "All", label: "All Meters", color: "#6C757D", bg: "#6C757D22" }, // Add All Meters button
+    {
+      id: "APM1",
+      label: "Total APM1 Meter",
+      color: "#28B7C4",
+      bg: "#28B7C422",
+    },
+    {
+      id: "APM2",
+      label: "Total APM2 Meter",
+      color: "#9F5BC1",
+      bg: "#9F5BC122",
+    },
+    {
+      id: "APM3",
+      label: "Total APM3 Meter",
+      color: "#FFA500",
+      bg: "#FFA50022",
+    },
   ];
 
   return (
@@ -156,9 +171,13 @@ const MeterStatistics = () => {
         {meterButtons.map((meter) => (
           <div
             key={meter.id}
-            className={`flex text-xs items-center gap-1 w-24 rounded-3xl p-2 ${
+            className={`flex text-xs items-center gap-1 w-32 rounded-3xl p-2 ${
               activeMeter === meter.id ? "bg-muted" : ""
             }`}
+            style={{
+              backgroundColor:
+                activeMeter !== meter.id ? meter.bg : "transparent",
+            }}
             onClick={() => setActiveMeter(meter.id)}
           >
             <span

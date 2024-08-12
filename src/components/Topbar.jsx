@@ -3,16 +3,18 @@
 import { BellDot, Search, ChevronDown } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
-import indiLogo from "../../public/indiLogo.png";
+import indiLogo from "../../public/logo.svg";
 import indiaFlag from "../../public/india.webp";
 import usaFlag from "../../public/usa.jpeg";
-import useToastStore from "../store/useToastStore";
+import useToastStore from "@/store/useToastStore";
+import useUserStore from "@/store/useUserStore"; // Import the Zustand store
 
 const Topbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("India");
   const showToast = useToastStore((state) => state.showToast);
+  const user = useUserStore((state) => state.user); // Get user details from Zustand store
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -42,7 +44,7 @@ const Topbar = () => {
           <div className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center space-x-2 bg-accent px-2 py-1  rounded-3xl text-black text-sm"
+              className="flex items-center space-x-2 bg-accent px-2 py-1 rounded-3xl text-black text-sm"
             >
               <div className="w-6 h-6 flex items-center justify-center">
                 <Image
@@ -96,12 +98,15 @@ const Topbar = () => {
             >
               <img
                 className="bg-primary w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-border"
-                src="https://captiontools.com/wp-content/uploads/2017/03/testy3-1.png"
+                src={
+                  user?.profilePicture ||
+                  "https://captiontools.com/wp-content/uploads/2017/03/testy3-1.png"
+                }
                 alt="Profile"
               />
               <div className="hidden sm:block">
                 <p className="text-sm font-semibold w-full text-start">
-                  Hi, John Doe
+                  Hi, {user?.username || "John Doe"}
                 </p>
                 <p className="text-xs">Welcome to Inditronics</p>
               </div>

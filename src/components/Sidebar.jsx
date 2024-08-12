@@ -15,44 +15,52 @@ import {
   Users,
   X,
 } from "lucide-react";
+import useSidebarStore from "../store/useSidebarStore";
 
 const menuItems = [
   { icon: PanelsTopLeft, name: "My Dashboard", path: "/dashboard" },
   { icon: Package, name: "Assets Management", path: "/assets-management" },
-  { icon: Radio, name: "Live Monitoring of Meters", path: "#" },
+  { icon: Radio, name: "Live Monitoring of Meters", path: "/live-monitoring" },
   { icon: Gauge, name: "Meter Management", path: "#" },
   { icon: FileCog, name: "List Management", path: "#" },
   { icon: Users, name: "User Management", path: "#" },
 ];
 
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
-  const [isExpanded, setIsExpanded] = useState(!isMobile);
+  const [sidebarState, setSidebarState] = useSidebarStore((state) => [
+    state.isSidebarExpanded,
+    state.setSidebarExpanded,
+  ]);
   const pathname = usePathname();
 
   const toggleSidebar = () => {
     if (!isMobile) {
-      setIsExpanded(!isExpanded);
+      setSidebarState(!sidebarState);
     }
   };
 
   const sidebarContent = (
     <motion.div
-      className={`h-[93vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl  p-3 relative mt-[4.5rem] ${
-        isMobile || isExpanded ? "w-64" : "w-16"
+      className={`h-[93vh] bg-[#fefefe] text-[#1f1f1f] flex flex-col shadow-xl p-3 relative mt-[4.5rem] ${
+        isMobile || sidebarState ? "w-64" : "w-16"
       } transition-all duration-300 ease-in-out`}
       initial={false}
-      animate={{ width: isMobile || isExpanded ? 280 : 72 }}
+      animate={{ width: isMobile || sidebarState ? 280 : 72 }}
     >
       {!isMobile && (
         <motion.button
           className={`absolute top-2 p-1 rounded-xl bg-[#fefefe] text-black shadow-md ${
-            isExpanded ? "-right-4" : "-right-3"
+            sidebarState ? "-right-4" : "-right-3"
           }`}
           onClick={toggleSidebar}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          {sidebarState ? (
+            <ChevronLeft size={20} />
+          ) : (
+            <ChevronRight size={20} />
+          )}
         </motion.button>
       )}
       <nav className="flex-1 pt-4">
@@ -73,7 +81,7 @@ const Sidebar = ({ isMobile, isOpen, onClose }) => {
                         : "bg-gray-300 text-gray-800"
                     }`}
                   />
-                  {(isMobile || isExpanded) && (
+                  {(isMobile || sidebarState) && (
                     <motion.span
                       className="ml-4 truncate"
                       initial={{ opacity: 0 }}
