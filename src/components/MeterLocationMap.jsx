@@ -69,7 +69,7 @@ const MeterLocationMap = () => {
   };
 
   return (
-    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full h-full">
+    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full h-96 lg:h-full">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex flex-grow items-center bg-white shadow-md rounded-3xl">
           <input

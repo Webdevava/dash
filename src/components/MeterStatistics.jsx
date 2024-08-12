@@ -151,12 +151,12 @@ const MeterStatistics = () => {
   ];
 
   return (
-    <div className="p-6 shadow-md bg-[#fefefe] rounded-3xl w-full h-full">
+    <div className="p-6 shadow-md bg-[#fefefe] rounded-3xl w-full h-full overflow-hidden">
       <div className="flex justify-start mb-4 gap-1">
         {meterButtons.map((meter) => (
           <div
             key={meter.id}
-            className={`flex text-xs items-center gap-1 rounded-3xl p-2 ${
+            className={`flex text-xs items-center gap-1 w-24 rounded-3xl p-2 ${
               activeMeter === meter.id ? "bg-muted" : ""
             }`}
             onClick={() => setActiveMeter(meter.id)}
