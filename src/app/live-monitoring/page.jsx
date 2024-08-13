@@ -333,6 +333,10 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import AAJ from "../../../public/AAJ.png"
+import NBC from "../../../public/NBC.png";
+import Image from "next/image";
+
 
 const MapComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -441,9 +445,11 @@ const MapComponent = () => {
                       <Dialog className="z-[99999]">
                         <DialogTrigger asChild>
                           <span className="flex bg-gray-300 rounded-3xl p-1 gap-2">
-                            <img
-                              src="../../assets/NBC.png"
+                            <Image
+                              height={10}
+                              width={10}
                               alt="NBC"
+                              src={NBC}
                               className="size-10 rounded-full bg-blue-400"
                             />
                             <span className="flex flex-col">
@@ -458,7 +464,7 @@ const MapComponent = () => {
                           <AccuracyCard
                             name={"NBC NEWS"}
                             id={"ID-065-7956"}
-                            src="../../assets/NBC.png"
+                            src={NBC}
                           />
                         </DialogContent>
                       </Dialog>
@@ -485,8 +491,10 @@ const MapComponent = () => {
                       <Dialog className="z-[99999]">
                         <DialogTrigger asChild>
                           <span className="flex bg-gray-300 rounded-3xl p-1 gap-2">
-                            <img
-                              src="../../assets/AAJ.png"
+                            <Image
+                              height={10}
+                              width={10}
+                              src={AAJ}
                               alt="AAJ"
                               className="size-10 rounded-full bg-red-400"
                             />
@@ -503,7 +511,7 @@ const MapComponent = () => {
                           <AccuracyCard
                             name={"AAJ TAK"}
                             id={"ID-065-7956"}
-                            src="../../assets/AAJ.png"
+                            src={AAJ}
                           />
                         </DialogContent>
                       </Dialog>
@@ -544,7 +552,9 @@ const AccuracyCard = ({name, id, src}) => {
     <div className="p-4 max-w-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <img
+          <Image
+            height={10}
+            width={10}
             src={src}
             alt="NBC Logo"
             className="w-8 h-8 mr-2"
