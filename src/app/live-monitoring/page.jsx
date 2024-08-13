@@ -322,7 +322,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+// import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   Filter,
@@ -336,6 +336,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AAJ from "../../../public/AAJ.png"
 import NBC from "../../../public/NBC.png";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 
 const MapComponent = () => {
@@ -355,21 +357,7 @@ const MapComponent = () => {
     <Layout>
       <div className="relative h-screen">
         <h1 className="">Live Monitoring of Meter</h1>
-        <div className="p-2 bg-white h-2/5 w-full rounded-xl">
-          {isMounted && (
-            <MapContainer
-              center={[51.505, -0.09]}
-              zoom={13}
-              className={`w-full rounded-lg h-full z-0 transition-all duration-300 ease-in-out`}
-              onClick={toggleExpand}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-            </MapContainer>
-          )}
-        </div>
+<Map/>
 
         <div className="flex items-center justify-center w-full">
           <div
