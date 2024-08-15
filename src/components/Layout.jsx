@@ -12,7 +12,7 @@ export default function Layout({ children }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // 2-second delay
+    }, 500); // 2-second delay
 
     return () => clearTimeout(timer); // Cleanup on unmount
   }, []);

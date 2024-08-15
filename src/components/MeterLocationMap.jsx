@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Search, Menu, Gauge, Ellipsis, EllipsisVertical } from "lucide-react";
+import { Search, EllipsisVertical } from "lucide-react";
 import L from "leaflet";
+import axios from "axios";
 
-// Define custom icons for each meter type with larger size
 const createCustomIcon = (color) => {
   return L.divIcon({
     className: "custom-icon",
-    html: `<div style="background-color: ${color}; width: 15px; height: 15px; border-radius: 50%; border: 2px solid black;"></div>`, // Added border for visibility
+    html: `<div style="background-color: ${color}; width: 15px; height: 15px; border-radius: 50%; border: 2px solid black;"></div>`,
     iconSize: [15, 15],
     iconAnchor: [7.5, 7.5],
   });
@@ -19,37 +19,44 @@ const MeterLocationMap = () => {
   const [selectedMeter, setSelectedMeter] = useState("all");
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("all");
+  const [meterLocations, setMeterLocations] = useState([]);
 
-  // Sample data for meter locations in the Dominican Republic with additional markers
-  const meterLocations = [
-    { type: "APM1 M", lat: 18.7357, lng: -70.1627, color: "#20B2AA" },
-    { type: "APM1 M", lat: 18.5001, lng: -69.9886, color: "#20B2AA" },
-    { type: "APM1 M", lat: 18.46, lng: -69.927, color: "#20B2AA" },
-    { type: "APM1 M", lat: 18.71, lng: -70.175, color: "#20B2AA" },
-    { type: "APM1 M", lat: 18.85, lng: -70.3, color: "#20B2AA" },
-    { type: "APM1 M", lat: 18.3, lng: -69.85, color: "#20B2AA" },
-    { type: "APM2 M", lat: 19.0661, lng: -70.5906, color: "#DDA0DD" },
-    { type: "APM2 M", lat: 18.4718, lng: -69.8923, color: "#DDA0DD" },
-    { type: "APM2 M", lat: 19.5, lng: -70.6, color: "#DDA0DD" },
-    { type: "APM2 M", lat: 18.7, lng: -69.85, color: "#DDA0DD" },
-    { type: "APM2 M", lat: 19.2, lng: -70.2, color: "#DDA0DD" },
-    { type: "APM2 M", lat: 18.8, lng: -69.95, color: "#DDA0DD" },
-    { type: "APM3 M", lat: 18.7357, lng: -69.3346, color: "#FFA500" },
-    { type: "APM3 M", lat: 19.2265, lng: -69.5908, color: "#FFA500" },
-    { type: "APM3 M", lat: 18.65, lng: -69.3, color: "#FFA500" },
-    { type: "APM3 M", lat: 19.0, lng: -69.5, color: "#FFA500" },
-    { type: "APM3 M", lat: 18.8, lng: -69.7, color: "#FFA500" },
-    { type: "APM3 M", lat: 18.9, lng: -69.6, color: "#FFA500" },
-  ];
+  useEffect(() => {
+    fetchLocations();
+  }, [selectedMeter]);
 
-    const dropdownColors = {
-      "Installed APM1 M": "#20B2AA",
-      "Connected APM1 M": "#20B2AA",
-      "Installed APM2 M": "#DDA0DD",
-      "Connected APM2 M": "#DDA0DD",
-      "Installed APM3 M": "#FFA500",
-      "Connected APM3 M": "#FFA500",
-    };
+  const fetchLocations = async () => {
+    try {
+      let endpoint = "http://13.202.8.46:5000/api/locations";
+      if (selectedMeter !== "all") {
+        const prefix = selectedMeter.charAt(3);
+        endpoint = `http://13.202.8.46:5000/api/locations/prefix/${prefix}`;
+      }
+      const response = await axios.get(endpoint);
+      const formattedLocations = response.data.map((location) => ({
+        type: `APM${location.DEVICE_ID.charAt(0)} M`,
+        lat: location.lat,
+        lng: location.lon,
+        color: getColorForMeterType(`APM${location.DEVICE_ID.charAt(0)} M`),
+      }));
+      setMeterLocations(formattedLocations);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
+
+  const getColorForMeterType = (type) => {
+    switch (type) {
+      case "APM1 M":
+        return "#20B2AA";
+      case "APM2 M":
+        return "#DDA0DD";
+      case "APM3 M":
+        return "#FFA500";
+      default:
+        return "#000000";
+    }
+  };
 
   const filteredLocations = meterLocations.filter((location) => {
     return (
@@ -65,19 +72,19 @@ const MeterLocationMap = () => {
 
   const handleDropdownOptionClick = (option) => {
     setSelectedDropdown(option);
-    setShowDropdown(false); // Close dropdown after selecting an option
+    setShowDropdown(false);
   };
 
   return (
-    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-auto lg:w-full h-96 lg:h-full">
+    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full lg:w-full h-[36rem]  lg:h-full">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex flex-grow items-center bg-white shadow-md rounded-3xl">
           <input
             type="text"
             placeholder="Search Meter Location"
-            className="w-full p-2  rounded-l-3xl text-sm pl-6"
+            className="w-full p-2 rounded-l-3xl text-sm pl-6"
           />
-          <button className=" p-2 rounded-r-3xl text-[#2054DD]">
+          <button className="p-2 rounded-r-3xl text-[#2054DD]">
             <Search />
           </button>
         </div>
@@ -95,9 +102,9 @@ const MeterLocationMap = () => {
                     ? "bg-[#DDA0DD22]"
                     : "bg-[#FFA50022]"
                 }`}
-                onClick={() =>
-                  setSelectedMeter(selectedMeter === meter ? "all" : meter)
-                }
+                onClick={() => {
+                  setSelectedMeter(selectedMeter === meter ? "all" : meter);
+                }}
               >
                 <span
                   className={`h-2 w-2 rounded-full ${
@@ -116,7 +123,7 @@ const MeterLocationMap = () => {
           <div className="relative">
             <button
               onClick={handleDropdownClick}
-              className="flex items-center p-1  rounded-full shadow-md"
+              className="flex items-center p-1 rounded-full shadow-md"
             >
               <EllipsisVertical size={20} />
             </button>
@@ -134,10 +141,14 @@ const MeterLocationMap = () => {
                     <li
                       key={option}
                       className={`p-2 text-xs cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
-                      style={{ color: dropdownColors[option] }}
+                      style={{
+                        color: getColorForMeterType(
+                          option.split(" ")[1] + " M"
+                        ),
+                      }}
                       onClick={() => handleDropdownOptionClick(option)}
                     >
-                      <Gauge size={20} />
+                      <span className="w-4 h-4">⚙️</span>
                       {option}
                     </li>
                   ))}
@@ -148,7 +159,7 @@ const MeterLocationMap = () => {
         </div>
       </div>
       <MapContainer
-        center={[18.7357, -70.1627]} // Centered on Dominican Republic
+        center={[18.7357, -70.1627]}
         zoom={7}
         style={{
           height: "87%",
