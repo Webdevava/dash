@@ -22,67 +22,42 @@ ChartJS.register(
 
 const MeterStatistics = () => {
   const [activeButton, setActiveButton] = useState("Installed");
-  const [activeMeter, setActiveMeter] = useState("All"); // Default to All Meters
+  const [activeMeter, setActiveMeter] = useState("All"); // Default to APM1
 
-  // Function to generate random data for each metric
   const getRandomValue = () => Math.floor(Math.random() * 301);
+
   const getRandomArray = (length) => Array.from({ length }, getRandomValue);
 
-  // Generate data only when the component mounts or the active button/meter changes
-  const generateChartData = () => {
-    return {
-      Installed: {
-        APM1: getRandomArray(6),
-        APM2: getRandomArray(6),
-        APM3: getRandomArray(6),
-      },
-      Connected: {
-        APM1: getRandomArray(6),
-        APM2: getRandomArray(6),
-        APM3: getRandomArray(6),
-      },
-      "EOD Received": {
-        APM1: getRandomArray(6),
-        APM2: getRandomArray(6),
-        APM3: getRandomArray(6),
-      },
-      "Installed Household": {
-        APM1: getRandomArray(6),
-        APM2: getRandomArray(6),
-        APM3: getRandomArray(6),
-      },
-    };
+  const chartData = {
+    Installed: {
+      APM1: getRandomArray(6),
+      APM2: getRandomArray(6),
+      APM3: getRandomArray(6),
+    },
+    Connected: {
+      APM1: getRandomArray(6),
+      APM2: getRandomArray(6),
+      APM3: getRandomArray(6),
+    },
+    "EOD Received": {
+      APM1: getRandomArray(6),
+      APM2: getRandomArray(6),
+      APM3: getRandomArray(6),
+    },
+    "Installed Household": {
+      APM1: getRandomArray(6),
+      APM2: getRandomArray(6),
+      APM3: getRandomArray(6),
+    },
   };
 
-  const chartData = generateChartData();
-
+  // Function to get data for all meters
   const getAllMetersData = () => {
     return {
       APM1: chartData[activeButton].APM1,
       APM2: chartData[activeButton].APM2,
       APM3: chartData[activeButton].APM3,
     };
-  };
-
-  const getTotalValue = (data) => {
-    return data.reduce((sum, value) => sum + value, 0);
-  };
-
-  const getDisplayValue = () => {
-    switch (activeMeter) {
-      case "All":
-        const allData = getAllMetersData();
-        const allValues = [...allData.APM1, ...allData.APM2, ...allData.APM3];
-        return `${(getTotalValue(allValues) / 1000).toFixed(1)}K+`;
-      case "APM1":
-      case "APM2":
-      case "APM3":
-        return `${(
-          getTotalValue(chartData[activeButton][activeMeter]) / 1000
-        ).toFixed(1)}K+`;
-      default:
-        return "0K+";
-    }
   };
 
   const data = {
@@ -169,7 +144,7 @@ const MeterStatistics = () => {
   ];
 
   const meterButtons = [
-    { id: "All", label: "All Meters", color: "#6C757D", bg: "#6C757D22" },
+    { id: "All", label: "All Meters", color: "#6C757D", bg: "#6C757D22" }, // Add All Meters button
     {
       id: "APM1",
       label: "Total APM1 Meter",
@@ -210,7 +185,7 @@ const MeterStatistics = () => {
               style={{ backgroundColor: meter.color }}
             ></span>
             <span className="text-xs flex flex-col truncate">
-              <span className="font-bold">{getDisplayValue()}</span>
+              <span className="font-bold">234K+</span>
               {meter.label}
             </span>
           </div>
