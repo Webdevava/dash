@@ -27,10 +27,10 @@ const MeterLocationMap = () => {
 
   const fetchLocations = async () => {
     try {
-      let endpoint = "http://13.202.8.46:5000/api/locations";
+      let endpoint = "http://localhost:5000/api/locations";
       if (selectedMeter !== "all") {
         const prefix = selectedMeter.charAt(3);
-        endpoint = `http://13.202.8.46:5000/api/locations/prefix/${prefix}`;
+        endpoint = `http://localhost:5000/api/locations/prefix/${prefix}`;
       }
       const response = await axios.get(endpoint);
       const formattedLocations = response.data.map((location) => ({

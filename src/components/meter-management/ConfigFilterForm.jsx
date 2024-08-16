@@ -4,7 +4,7 @@ import axios from "axios";
 import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
 
-const FilterForm = ({ onSearch }) => {
+const ConfigFilterForm = ({ onSearch }) => {
   const [filters, setFilters] = useState({
     deviceId: "",
     deviceIdMin: "",
@@ -48,40 +48,27 @@ const FilterForm = ({ onSearch }) => {
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
-              Device ID Range
+              Device ID
             </label>
             <input
               type="text"
               name="deviceId"
               value={filters.deviceId}
               onChange={handleChange}
-              placeholder="e.g. 112345 or 1-2"
+              placeholder="e.g. 100001"
               className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
             />
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
-              Device ID Min
+              Household ID
             </label>
             <input
               type="text"
-              name="deviceIdMin"
-              value={filters.deviceIdMin}
+              name="deviceId"
+              value={filters.deviceId}
               onChange={handleChange}
-              placeholder="e.g. 1000"
-              className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Device ID Max
-            </label>
-            <input
-              type="text"
-              name="deviceIdMax"
-              value={filters.deviceIdMax}
-              onChange={handleChange}
-              placeholder="e.g. 2000"
+              placeholder="e.g. 100001"
               className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
             />
           </div>
@@ -90,7 +77,7 @@ const FilterForm = ({ onSearch }) => {
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
-              Connectivity Status
+              Hardware Version
             </label>
             <select
               name="ipUp"
@@ -98,14 +85,14 @@ const FilterForm = ({ onSearch }) => {
               onChange={handleChange}
               className="mt-1 block w-full bg-accent/25 rounded-3xl border-0 p-2"
             >
-              <option value="">Select</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              <option value="">APM1</option>
+              <option value="true">APM2</option>
+              <option value="false">APM3</option>
             </select>
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
-              Installing Status
+              Config Type
             </label>
             <select
               name="installing"
@@ -113,58 +100,11 @@ const FilterForm = ({ onSearch }) => {
               onChange={handleChange}
               className="mt-1 block w-full bg-accent/25 rounded-3xl border-0 p-2"
             >
-              <option value="">Select</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Meter Success
-            </label>
-            <select
-              name="meterSuccess"
-              value={filters.meterSuccess}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-accent/25 rounded-3xl border-0 p-2"
-            >
-              <option value="">Select</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              <option value="">Network</option>
             </select>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Latitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              name="lat"
-              value={filters.lat}
-              onChange={handleChange}
-              placeholder="e.g. 12.345"
-              className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Longitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              name="lon"
-              value={filters.lon}
-              onChange={handleChange}
-              placeholder="e.g. 67.890"
-              className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
-            />
-          </div>
-        </div>
 
         <div className="flex items-center justify-end">
           <button
@@ -179,4 +119,4 @@ const FilterForm = ({ onSearch }) => {
   );
 };
 
-export default FilterForm;
+export default ConfigFilterForm;

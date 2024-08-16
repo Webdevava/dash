@@ -29,6 +29,8 @@ import {
   FileInput,
   Paintbrush2,
 } from "lucide-react";
+import ConfigFilterForm from "@/components/meter-management/ConfigFilterForm";
+import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
 
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -49,7 +51,7 @@ const Page = () => {
     try {
       // Replace with your API call to fetch data
       const response = await fetch(
-        "http://13.202.8.46:5000/api/devices/search?deviceIdMin=100001&deviceIdMax=300010"
+        "http://localhost:5000/api/devices/search?deviceIdMin=100001&deviceIdMax=300010"
       );
       const newData = await response.json();
       setData(newData);
@@ -61,7 +63,7 @@ const Page = () => {
     const fetchData = async (deviceIdMin, deviceIdMax) => {
       try {
         const response = await axios.get(
-          `http://13.202.8.46:5000/api/devices/search?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+          `http://localhost:5000/api/devices/search?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
         );
         setData(response.data);
       } catch (error) {
@@ -168,25 +170,35 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <Dialog className="z-[99999] bg-white p-0">
                         <DialogTrigger asChild>
-                          <span className="flex bg-accent rounded-3xl p-1 gap-2">
+                          <span className="flex bg-accent rounded-3xl p-1 gap-2 cursor-pointer">
                             <Image
-                              height={10}
-                              width={10}
+                              height={40} // Adjust size to match your requirements
+                              width={40} // Adjust size to match your requirements
                               alt={item.channel_name || "logo"}
-                              src={item.channel_image[0]}
-                              className="size-10 rounded-full"
+                              src={
+                                item.channel_image[3] ||
+                                item.channel_image[2] ||
+                                item.channel_image[1] ||
+                                item.channel_image[0]
+                              }
+                              className="rounded-full"
                             />
                             <p className="flex flex-col">
-                              <span className=" truncate w-36">
+                              <span className="truncate w-36">
                                 {item.channel_name}
                               </span>
                               <span>{item.channel_id}</span>
                             </p>
                           </span>
                         </DialogTrigger>
-                        <DialogContent className=" bg-white p-0">
+                        <DialogContent className="bg-white p-0">
                           <AccuracyCard
-                            logoSrc={item.channel_image[0]}
+                            logoSrc={
+                                item.channel_image[3] ||
+                                item.channel_image[2] ||
+                                item.channel_image[1] ||
+                                item.channel_image[0]
+                              }
                             name={item.channel_name}
                             id={item.channel_id}
                             accuracy={78}
@@ -276,48 +288,33 @@ const Page = () => {
               <Table className="min-w-full">
                 <TableHeader>
                   <TableRow className="bg-gray-100">
-                    <TableHead className="min-w-40 text-sm">
-                      Meter Status
-                    </TableHead>
                     <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Channel Detection
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Connectivity Status
+                      Meter Status
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
                       Household ID
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Household Status
+                      Config Type
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Hardware Version
+                      Applied Value
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Alarm Type
+                     Server Value
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">Network</TableHead>
-                    <TableHead className="min-w-40 text-sm">Location</TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Lat & Lon
+                      Submitted At
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">Radius</TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Applied At
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((item, index) => (
                     <TableRow key={index}>
-                      <TableCell className="p-2 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded-full ${
-                            item.meter_status ? "bg-green-500" : "bg-gray-500"
-                          } text-white`}
-                        >
-                          {item.meter_status ? "Online" : "Offline"}
-                        </span>
-                      </TableCell>
                       <TableCell className="p-2 text-sm font-extrabold">
                         <Link
                           href={`/live-monitoring/${item.meter_id}`}
@@ -328,47 +325,12 @@ const Page = () => {
                         </Link>
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        <Dialog className="z-[99999] bg-white p-0">
-                          <DialogTrigger asChild>
-                            <span className="flex bg-accent rounded-3xl p-1 gap-2">
-                              <Image
-                                height={10}
-                                width={10}
-                                alt={item.channel_name || "logo"}
-                                src={item.channel_image[0]}
-                                className="size-10 rounded-full"
-                              />
-                              <p className="flex flex-col">
-                                <span className=" truncate w-36">
-                                  {item.channel_name}
-                                </span>
-                                <span>{item.channel_id}</span>
-                              </p>
-                            </span>
-                          </DialogTrigger>
-                          <DialogContent className=" bg-white p-0">
-                            <AccuracyCard
-                              logoSrc={item.channel_image[0]}
-                              name={item.channel_name}
-                              id={item.channel_id}
-                              accuracy={78}
-                              audioMatching={86}
-                              logoDetection={75}
-                            />
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.connectivity_status
-                              ? "bg-green-500"
-                              : "bg-gray-500"
+                            item.meter_status ? "bg-green-500" : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.connectivity_status
-                            ? "Connected"
-                            : "Disconnected"}
+                          {item.meter_status ? "Online" : "Offline"}
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
@@ -702,7 +664,16 @@ const Page = () => {
                 </button>
               </div>
             </div>
-            {showFilters && <FilterForm onSearch={handleSearch} />}
+            {showFilters &&
+              (activeTab === "Config & Update" ? (
+                activeSubTab === "View&Update" ? (
+                  <ConfigFilterForm onSearch={handleSearch} />
+                ) : activeSubTab === "History" ? (
+                  <ConfigHistoryForm onSearch={handleSearch} />
+                ) : null
+              ) : (
+                <FilterForm onSearch={handleSearch} />
+              ))}
 
             {renderContent()}
           </div>

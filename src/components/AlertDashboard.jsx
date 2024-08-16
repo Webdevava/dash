@@ -99,9 +99,9 @@ const AlarmDashboard = () => {
   useEffect(() => {
     const fetchAlarms = async () => {
       try {
-        let url = "http://13.202.8.46:5000/api/alerts";
+        let url = "http://localhost:5000/api/alerts";
         if (filter !== "all") {
-          url = `http://13.202.8.46:5000/api/devices/by-alert-type?alertType=${filter}`;
+          url = `http://localhost:5000/api/devices/by-alert-type?alertType=${filter}`;
         }
         const response = await axios.get(url);
         const fetchedAlarms = response.data.map(mapAlarmData);

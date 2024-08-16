@@ -25,7 +25,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://13.202.8.46:5000/api/devices/${deviceid}`
+          `http://localhost:5000/api/devices/${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");

@@ -53,7 +53,7 @@ const MapComponent = () => {
   const handleRangeSelect = async (min, max) => {
     setShowDropdown(false); // Close dropdown after selection
     const response = await axios.get(
-      `http://13.202.8.46:5000/api/devices/search?deviceIdMin=${min}&deviceIdMax=${max}`
+      `http://localhost:5000/api/devices/search?deviceIdMin=${min}&deviceIdMax=${max}`
     );
     setData(response.data); // Set the fetched data to the table
   };

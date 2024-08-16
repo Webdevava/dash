@@ -23,9 +23,9 @@ const AccuracyCard = ({
         <Image
           src={logoSrc}
           alt={name}
-          width={40}
-          height={40}
-          className="rounded-full"
+          width={64}
+          height={64}
+          className="rounded-full object-cover"
         />
         <div className="ml-4">
           <h2 className="font-bold text-xl">{name}</h2>
