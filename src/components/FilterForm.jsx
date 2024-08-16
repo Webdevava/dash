@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
+import useStore from "@/store/useDataStore"; // Adjust the import path as needed
 
 const FilterForm = ({ onSearch }) => {
   const [filters, setFilters] = useState({
@@ -14,6 +15,8 @@ const FilterForm = ({ onSearch }) => {
     installing: "",
     meterSuccess: "",
   });
+
+  const setSearchResults = useStore((state) => state.setSearchResults);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +35,8 @@ const FilterForm = ({ onSearch }) => {
           params: filters,
         }
       );
-      onSearch(response.data);
+      setSearchResults(response.data); // Save results to Zustand store
+      if (onSearch) onSearch(response.data); // Optional: Call onSearch if provided
     } catch (error) {
       console.error("Error fetching data:", error);
     }

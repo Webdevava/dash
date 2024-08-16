@@ -38,6 +38,8 @@ const Page = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
 
+  const [showPopover, setShowPopover] = useState(false);
+
   const handleSearch = (filteredData) => {
     setData(filteredData);
     setShowFilters(false);
@@ -55,6 +57,17 @@ const Page = () => {
       console.error("Error refreshing data:", error);
     }
   };
+
+    const fetchData = async (deviceIdMin, deviceIdMax) => {
+      try {
+        const response = await axios.get(
+          `http://13.202.8.46:5000/api/devices/search?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+        );
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
 
   const handleRowSelect = (id) => {
@@ -597,15 +610,13 @@ const Page = () => {
           >
             {activeTab === "Meter Events" && (
               <div className="mb-4">
-                <nav className="w-full border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 text-sm">
+                <nav className="w-full border-b border-gray-300 font-medium text-sm">
                   <ul className="flex items-center justify-start">
                     {["Records", "Plot", "Retrieval Request"].map((subTab) => (
                       <li
                         key={subTab}
-                        className={`rounded-3xl px-4 py-1 cursor-pointer ${
-                          activeSubTab === subTab
-                            ? "bg-primary text-white font-bold"
-                            : ""
+                        className={` px-4 py-1 cursor-pointer ${
+                          activeSubTab === subTab ? "border-b font-bold " : ""
                         }`}
                         onClick={() => setActiveSubTab(subTab)}
                       >
@@ -639,16 +650,14 @@ const Page = () => {
 
             {activeTab === "Meter Release Management" && (
               <div className="mb-4">
-                <nav className="w-full border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 text-sm">
+                <nav className="w-full border-b border-gray-300 font-medium text-sm">
                   <ul className="flex items-center justify-start">
                     {["Search", "History", "Submit Job", "View Job"].map(
                       (subTab) => (
                         <li
                           key={subTab}
-                          className={`rounded-3xl px-4 py-1 cursor-pointer ${
-                            activeSubTab === subTab
-                              ? "bg-primary text-white font-bold"
-                              : ""
+                          className={` px-4 py-1 cursor-pointer ${
+                            activeSubTab === subTab ? "border-b font-bold " : ""
                           }`}
                           onClick={() => setActiveSubTab(subTab)}
                         >
@@ -667,8 +676,12 @@ const Page = () => {
                   type="text"
                   placeholder="Search Meter by Serial Range"
                   className="px-4 py-2 text-sm w-72 rounded-l-3xl bg-accent/50"
+                  onClick={() => setShowPopover(!showPopover)}
                 />
-                <button className="px-4 flex gap-2 text-sm text-white py-3 border rounded-3xl bg-[#2054DD]">
+                <button
+                  onClick={fetchData}
+                  className="px-4 flex gap-2 text-sm text-white py-3 border rounded-3xl bg-[#2054DD]"
+                >
                   <Search /> search
                 </button>
               </div>
