@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AAJ from "../../../public/AAJ.png";
 import NBC from "../../../public/NBC.png";
 import Image from "next/image";
@@ -295,14 +295,12 @@ const Page = () => {
                     <TableHead className="min-w-40 text-sm">
                       Household ID
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Config Type
-                    </TableHead>
+                    <TableHead className="min-w-40 text-sm">Config</TableHead>
                     <TableHead className="min-w-40 text-sm">
                       Applied Value
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
-                     Server Value
+                      Server Value
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
                       Submitted At
@@ -316,32 +314,77 @@ const Page = () => {
                   {data.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell className="p-2 text-sm font-extrabold">
-                        <Link
-                          href={`/live-monitoring/${item.meter_id}`}
-                          className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
-                        >
-                          {item.meter_id}
-                          <ChevronRight size={18} color="#2054DD" />
-                        </Link>
+                        <Dialog className="z-[99999] bg-white p-0">
+                          <DialogTrigger asChild>
+                            <div className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between">
+                              {item.DEVICE_ID}
+                              <ChevronRight size={18} color="#2054DD" />
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent className="bg-white px-6 py-4">
+                            <div className="flex flex-col gap-3">
+                              <h1 className=" text-xl font-bold mb-1">
+                                Update Config
+                              </h1>
+                              <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
+                                <div className="flex flex-col p-2 text-md font-semibold">
+                                  <p>Meter Id</p> {item.DEVICE_ID}
+                                </div>
+                                <div className="flex flex-col p-2 text-md font-semibold">
+                                  <p>Present Value</p>{" "}
+                                  <p className="text-red-700">False</p>
+                                </div>
+                              </div>
+
+                              <div className=" p-2 rounded-xl flex flex-col gap-">
+                                <p>Change Value to</p>
+                                <div className="flex gap-3 p-2 text-md font-semibold">
+                                  <label className=" text-green-600">
+                                    <input
+                                      type="radio"
+                                      name="value"
+                                      value="true"
+                                    />{" "}
+                                    True
+                                  </label>
+                                  <label className=" text-red-600">
+                                    <input
+                                      type="radio"
+                                      name="value"
+                                      value="false"
+                                    />{" "}
+                                    False
+                                  </label>
+                                </div>
+                              </div>
+                              <div className="flex gap-3 items-center justify-end">
+                            <DialogClose asChild>yyy
+                                <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
+                                  Cancel
+                                </button>
+                              </DialogClose>
+                                
+                                  <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
+                                    OK
+                                  </button>
+                                
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                       <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.meter_status ? "bg-green-500" : "bg-gray-500"
+                            item.online ? "bg-green-500" : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.meter_status ? "Online" : "Offline"}
+                          {item.online ? "Online" : "Offline"}
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
                       <TableCell className="p-2 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded-full ${
-                            item.hh_status ? "bg-green-500" : "bg-gray-500"
-                          } text-white`}
-                        >
-                          {item.hh_status ? "Installed" : "Uninstalled"}
-                        </span>
+                        {item.CONFIG}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
                         {item.hw_version}
@@ -358,12 +401,6 @@ const Page = () => {
                       </TableCell>
                       <TableCell className="p-2 text-sm">
                         {item.location || "Dominican Republic"}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.lat} / {item.lon}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.radius || "3km"}
                       </TableCell>
                     </TableRow>
                   ))}

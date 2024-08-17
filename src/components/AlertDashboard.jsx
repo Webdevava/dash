@@ -99,9 +99,9 @@ const AlarmDashboard = () => {
   useEffect(() => {
     const fetchAlarms = async () => {
       try {
-        let url = "http://localhost:5000/api/alerts";
+        let url = "http://localhost:5000/search/alerts";
         if (filter !== "all") {
-          url = `http://localhost:5000/api/devices/by-alert-type?alertType=${filter}`;
+          url = `http://localhost:5000/search/alerts?AlertType=${filter}`;
         }
         const response = await axios.get(url);
         const fetchedAlarms = response.data.map(mapAlarmData);
@@ -116,11 +116,11 @@ const AlarmDashboard = () => {
 
 const mapAlarmData = (alarm) => {
   const alertTypeMap = {
-    9: { title: "METER TAMPER", icon: FaClock },
-    10: { title: "SOS ALARM", icon: FaBell },
-    11: { title: "BATTERY ALARM", icon: FaBatteryQuarter },
-    26: { title: "SIM ALERT", icon: FaExclamationTriangle },
-    27: { title: "SYSTEM ALARM", icon: FaExclamationTriangle },
+    5: { title: "METER TAMPER", icon: FaClock },
+    6: { title: "SOS ALARM", icon: FaBell },
+    7: { title: "BATTERY ALARM", icon: FaBatteryQuarter },
+    16: { title: "SIM ALERT", icon: FaExclamationTriangle },
+    17: { title: "SYSTEM ALARM", icon: FaExclamationTriangle },
   };
 
   const alertInfo = alertTypeMap[alarm.Type] || {
@@ -129,9 +129,9 @@ const mapAlarmData = (alarm) => {
   };
 
   const colorMap = {
-    Generated: "#32ADE6",
-    Pending: "#FFA500",
-    Resolved: "#22c55e",
+    generated: "#32ADE6",
+    pending: "#FFA500",
+    resolved: "#22c55e",
   };
 
   const alarmColor = colorMap[alarm.AlertType] || "#FF0000";
@@ -193,30 +193,30 @@ const mapAlarmData = (alarm) => {
         <div className="flex flex-wrap justify-center sm:justify-end text-xs gap-2">
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${
-              filter === "Generated" ? "ring-2 ring-[#3e4cc3]" : ""
+              filter === "generated" ? "ring-2 ring-[#3e4cc3]" : ""
             }`}
-            onClick={() => setFilter("Generated")}
+            onClick={() => setFilter("generated")}
           >
             <span className="w-3 h-3 bg-[#32ADE6] rounded-full"></span>
-            <span className="text-sm font-semibold">Generated</span>
+            <span className="text-sm font-semibold">generated</span>
           </div>
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${
-              filter === "Pending" ? "ring-2 ring-[#FFB800]" : ""
+              filter === "pending" ? "ring-2 ring-[#FFB800]" : ""
             }`}
-            onClick={() => setFilter("Pending")}
+            onClick={() => setFilter("pending")}
           >
             <span className="w-3 h-3 bg-[#FFA500] rounded-full"></span>
-            <span className="text-sm font-semibold">Pending</span>
+            <span className="text-sm font-semibold">pending</span>
           </div>
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${
-              filter === "Resolved" ? "ring-2 ring-[#34C759]" : ""
+              filter === "resolved" ? "ring-2 ring-[#34C759]" : ""
             }`}
-            onClick={() => setFilter("Resolved")}
+            onClick={() => setFilter("resolved")}
           >
             <span className="w-3 h-3 bg-[#22c55e] rounded-full"></span>
-            <span className="text-sm font-semibold">Resolved</span>
+            <span className="text-sm font-semibold">resolved</span>
           </div>
           <div
             className={`flex items-center space-x-2 bg-[#fefefe] rounded-3xl p-2 shadow-md cursor-pointer ${

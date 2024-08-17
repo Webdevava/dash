@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
-import LiveMonitoringChart from "@/components/LiveMonitoringChart";
 import {
   Table,
   TableBody,
@@ -11,13 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"; // Import styled table components
-import { ChevronRight, Link } from "lucide-react";
-import Image from "next/image";
 
 const Page = () => {
   const { deviceid } = useParams();
-  const router = useRouter(); // Initialize the router
-  const [data, setData] = useState(null);
+  const router = useRouter();
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,13 +22,13 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/devices/${deviceid}`
+          `http://localhost:5000/search/all?deviceId=${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const result = await response.json();
-        setData(result);
+        setData(result || []);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -60,68 +57,40 @@ const Page = () => {
           </button>
         </div>
 
-        {data && data.length > 0 ? (
+        {data.length > 0 ? (
           <div className="overflow-auto bg-white rounded-xl border shadow-md max-h-[25vh] mb-10">
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow className="bg-gray-100">
-                  <TableHead className="min-w-40 text-sm">
-                    Meter Status
-                  </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
+                  <TableHead className="min-w-40 text-sm">Latitude</TableHead>
+                  <TableHead className="min-w-40 text-sm">Longitude</TableHead>
+                  <TableHead className="min-w-40 text-sm">HHID</TableHead>
                   <TableHead className="min-w-40 text-sm">
-                    Channel Detection
+                    Online Status
                   </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Connectivity Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Household ID
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Household Status
-                  </TableHead>
+                  <TableHead className="min-w-40 text-sm">SIM Type</TableHead>
                   <TableHead className="min-w-40 text-sm">
                     Hardware Version
                   </TableHead>
-                  <TableHead className="min-w-40 text-sm">Alarm Type</TableHead>
-                  <TableHead className="min-w-40 text-sm">Network</TableHead>
-                  <TableHead className="min-w-40 text-sm">Location</TableHead>
-                  <TableHead className="min-w-40 text-sm">Lat & Lon</TableHead>
-                  <TableHead className="min-w-40 text-sm">Radius</TableHead>
+                  <TableHead className="min-w-40 text-sm">
+                    Installation Status
+                  </TableHead>
+                  <TableHead className="min-w-40 text-sm">Logos</TableHead>
+                  <TableHead className="min-w-40 text-sm">
+                    Fingerprints
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.meter_status ? "bg-green-500" : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.meter_status ? "Online" : "Offline"}
-                      </span>
-                    </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
-                      {item.meter_id}
+                      {item.DEVICE_ID}
                     </TableCell>
-                    <TableCell className="p-2 text-xs font-extrabold">
-                      <div className="flex bg-accent rounded-3xl p-1 gap-2">
-                        <Image
-                          height={10}
-                          width={10}
-                          alt={item.channel_name || "logo"}
-                          src={item.channel_image[0]}
-                          className="size-10 rounded-full"
-                        />
-                        <p className="flex flex-col">
-                          <span className=" truncate w-36">{item.channel_name}</span>
-                          <span>{item.channel_id}</span>
-                        </p>
-                      </div>
-                    </TableCell>
-
+                    <TableCell className="p-2 text-sm">{item.lat}</TableCell>
+                    <TableCell className="p-2 text-sm">{item.lon}</TableCell>
+                    <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -135,38 +104,46 @@ const Page = () => {
                           : "Disconnected"}
                       </span>
                     </TableCell>
-                    <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
                     <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.hh_status ? "bg-green-500" : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.hh_status ? "Installed" : "Uninstalled"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.hw_version}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.alarm_type || "Pending"}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.active_sim === 1
+                      {item.sim === 1
                         ? "Jio"
-                        : item.active_sim === 2
+                        : item.sim === 2
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
-
                     <TableCell className="p-2 text-sm">
-                      {item.location || "Dominican Republic"}
+                      {item.hardwareVersion}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.lat} / {item.lon}
+                      <span
+                        className={`px-2 py-1 rounded-full ${
+                          item.installing ? "bg-green-500" : "bg-gray-500"
+                        } text-white`}
+                      >
+                        {item.installing ? "Installed" : "Uninstalled"}
+                      </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.radius || "3km"}
+                      {item.logos.map((logo, idx) => (
+                        <div key={idx}>
+                          <p>
+                            Timestamp:{" "}
+                            {new Date(logo.timestamp).toLocaleString()}
+                          </p>
+                          <p>Channel ID: {logo.channel_id}</p>
+                          <p>Accuracy: {logo.accuracy}</p>
+                        </div>
+                      ))}
+                    </TableCell>
+                    <TableCell className="p-2 text-sm">
+                      {item.fingerprints.map((fp, idx) => (
+                        <div key={idx}>
+                          <p>
+                            Timestamp: {new Date(fp.timestamp).toLocaleString()}
+                          </p>
+                          <p>Channel ID: {fp.channel_id}</p>
+                        </div>
+                      ))}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -174,12 +151,10 @@ const Page = () => {
             </Table>
           </div>
         ) : (
-          <p className="text-center text-lg mt-4">
-            No data available for this device ID.
+          <p className="text-center text-lg">
+            No data available for the selected meter ID.
           </p>
         )}
-
-        <LiveMonitoringChart />
       </div>
     </Layout>
   );

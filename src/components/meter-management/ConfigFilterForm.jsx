@@ -5,36 +5,22 @@ import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
 
 const ConfigFilterForm = ({ onSearch }) => {
-  const [filters, setFilters] = useState({
-    deviceId: "",
-    deviceIdMin: "",
-    deviceIdMax: "",
-    ipUp: "",
-    lat: "",
-    lon: "",
-    installing: "",
-    meterSuccess: "",
-  });
+  const [deviceId, setDeviceId] = useState(""); // State for device ID
 
   const setSearchResults = useStore((state) => state.setSearchResults);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
+    setDeviceId(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/devices/search",
-        {
-          params: filters,
-        }
-      );
+      const endpoint = deviceId
+        ? `http://localhost:5000/search/config/${deviceId}` // Specific device
+        : "http://localhost:5000/search/config"; // All devices
+
+      const response = await axios.get(endpoint);
       setSearchResults(response.data); // Save results to Zustand store
       if (onSearch) onSearch(response.data); // Optional: Call onSearch if provided
     } catch (error) {
@@ -53,58 +39,13 @@ const ConfigFilterForm = ({ onSearch }) => {
             <input
               type="text"
               name="deviceId"
-              value={filters.deviceId}
+              value={deviceId}
               onChange={handleChange}
-              placeholder="e.g. 100001"
-              className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Household ID
-            </label>
-            <input
-              type="text"
-              name="deviceId"
-              value={filters.deviceId}
-              onChange={handleChange}
-              placeholder="e.g. 100001"
+              placeholder="Enter Device ID (leave empty to get all)"
               className="mt-1 block w-full border-0 bg-accent/25 rounded-3xl p-2"
             />
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Hardware Version
-            </label>
-            <select
-              name="ipUp"
-              value={filters.ipUp}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-accent/25 rounded-3xl border-0 p-2"
-            >
-              <option value="">APM1</option>
-              <option value="true">APM2</option>
-              <option value="false">APM3</option>
-            </select>
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Config Type
-            </label>
-            <select
-              name="installing"
-              value={filters.installing}
-              onChange={handleChange}
-              className="mt-1 block w-full bg-accent/25 rounded-3xl border-0 p-2"
-            >
-              <option value="">Network</option>
-            </select>
-          </div>
-        </div>
-
 
         <div className="flex items-center justify-end">
           <button

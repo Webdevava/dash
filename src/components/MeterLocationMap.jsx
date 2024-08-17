@@ -25,33 +25,34 @@ const MeterLocationMap = () => {
     fetchLocations();
   }, [selectedMeter]);
 
-  const fetchLocations = async () => {
-    try {
-      let endpoint = "http://localhost:5000/api/locations";
-      if (selectedMeter !== "all") {
-        const prefix = selectedMeter.charAt(3);
-        endpoint = `http://localhost:5000/api/locations/prefix/${prefix}`;
-      }
-      const response = await axios.get(endpoint);
-      const formattedLocations = response.data.map((location) => ({
-        type: `APM${location.DEVICE_ID.charAt(0)} M`,
-        lat: location.lat,
-        lng: location.lon,
-        color: getColorForMeterType(`APM${location.DEVICE_ID.charAt(0)} M`),
-      }));
-      setMeterLocations(formattedLocations);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
+const fetchLocations = async () => {
+  try {
+    let endpoint = "http://localhost:5000/location/locations";
+    if (selectedMeter !== "all") {
+      const hardwareVersion = selectedMeter.split(" ")[1];
+      endpoint = `http://localhost:5000/location/locations/hardware_version/${hardwareVersion}`;
     }
-  };
+    const response = await axios.get(endpoint);
+    const formattedLocations = response.data.map((location) => ({
+      type: `${location.hardware_version}`, // Adjusted to use hardware_version
+      lat: location.lat,
+      lng: location.lon,
+      color: getColorForMeterType(`${location.hardware_version}`), // Adjusted to use hardware_version
+    }));
+    setMeterLocations(formattedLocations);
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+  }
+};
+
 
   const getColorForMeterType = (type) => {
     switch (type) {
-      case "APM1 M":
+      case "APM1":
         return "#20B2AA";
-      case "APM2 M":
+      case "APM2":
         return "#DDA0DD";
-      case "APM3 M":
+      case "APM3":
         return "#FFA500";
       default:
         return "#000000";
@@ -76,7 +77,7 @@ const MeterLocationMap = () => {
   };
 
   return (
-    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full lg:w-full h-[36rem]  lg:h-full">
+    <div className="p-4 shadow-md bg-[#fefefe] rounded-3xl w-full lg:w-full h-[36rem] lg:h-full">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex flex-grow items-center bg-white shadow-md rounded-3xl">
           <input
@@ -90,15 +91,15 @@ const MeterLocationMap = () => {
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex text-xs space-x-2">
-            {["APM1 M", "APM2 M", "APM3 M"].map((meter) => (
+            {["APM1", "APM2", "APM3"].map((meter) => (
               <div
                 key={meter}
                 className={`flex items-center space-x-1 py-2 px-1 rounded-3xl truncate shadow-md cursor-pointer ${
                   selectedMeter === meter ? "ring-2 ring-offset-2" : ""
                 } ${
-                  meter === "APM1 M"
+                  meter === "APM1"
                     ? "bg-[#20B2AA22]"
-                    : meter === "APM2 M"
+                    : meter === "APM2"
                     ? "bg-[#DDA0DD22]"
                     : "bg-[#FFA50022]"
                 }`}
@@ -108,9 +109,9 @@ const MeterLocationMap = () => {
               >
                 <span
                   className={`h-2 w-2 rounded-full ${
-                    meter === "APM1 M"
+                    meter === "APM1"
                       ? "bg-[#20B2AA]"
-                      : meter === "APM2 M"
+                      : meter === "APM2"
                       ? "bg-[#DDA0DD]"
                       : "bg-[#FFA500]"
                   }`}
@@ -131,19 +132,19 @@ const MeterLocationMap = () => {
               <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                 <ul className="p-2 space-y-1">
                   {[
-                    "Installed APM1 M",
-                    "Connected APM1 M",
-                    "Installed APM2 M",
-                    "Connected APM2 M",
-                    "Installed APM3 M",
-                    "Connected APM3 M",
+                    "Installed APM1",
+                    "Connected APM1",
+                    "Installed APM2",
+                    "Connected APM2",
+                    "Installed APM3",
+                    "Connected APM3",
                   ].map((option) => (
                     <li
                       key={option}
                       className={`p-2 text-xs cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
                       style={{
                         color: getColorForMeterType(
-                          option.split(" ")[1] + " M"
+                          option.split(" ")[1] + ""
                         ),
                       }}
                       onClick={() => handleDropdownOptionClick(option)}
@@ -159,7 +160,7 @@ const MeterLocationMap = () => {
         </div>
       </div>
       <MapContainer
-        center={[18.7357, -70.1627]}
+        center={[19.7515, 75.7139]}
         zoom={7}
         style={{
           height: "87%",

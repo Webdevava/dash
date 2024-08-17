@@ -29,12 +29,9 @@ const FilterForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/devices/search",
-        {
-          params: filters,
-        }
-      );
+      const response = await axios.get("http://localhost:5000/search/latest", {
+        params: filters,
+      });
       setSearchResults(response.data); // Save results to Zustand store
       if (onSearch) onSearch(response.data); // Optional: Call onSearch if provided
     } catch (error) {
