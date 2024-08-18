@@ -11,7 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import AAJ from "../../../public/AAJ.png";
 import NBC from "../../../public/NBC.png";
 import Image from "next/image";
@@ -37,10 +43,43 @@ const Page = () => {
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("Meter Events");
   const [activeSubTab, setActiveSubTab] = useState("Records");
-  const [selectedRows, setSelectedRows] = useState(new Set());
+  // const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
 
   const [showPopover, setShowPopover] = useState(false);
+    const [selectedRows, setSelectedRows] = useState([]);
+
+    const handleCheckboxChange = (deviceId) => {
+      setSelectedRows((prevSelectedRows) =>
+        prevSelectedRows.includes(deviceId)
+          ? prevSelectedRows.filter((id) => id !== deviceId)
+          : [...prevSelectedRows, deviceId]
+      );
+    };
+
+    const isRowSelected = (deviceId) => selectedRows.includes(deviceId);
+
+    const handleUpdateClick = () => {
+      // Handle the update action here
+      console.log("Updating rows: ", selectedRows);
+    };
+
+  
+  function convertUnixToUTCAndIST(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
+
+    // Convert to UTC
+    const utcDate = date.toUTCString();
+
+    // Convert to IST
+    const istDate = new Date(
+      date.getTime() + 5.5 * 60 * 60 * 1000
+    ).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    return { utcDate, istDate };
+  }
 
   const handleSearch = (filteredData) => {
     setData(filteredData);
@@ -113,7 +152,6 @@ const Page = () => {
   const renderMeterEventsContent = () => {
     switch (activeTab) {
       case "Meter Events":
-      case "Config & Update":
       case "Meter Release Management":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-1/2">
@@ -160,10 +198,10 @@ const Page = () => {
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <Link
-                        href={`/live-monitoring/${item.meter_id}`}
+                        href={`/live-monitoring/${item.deviceId}`}
                         className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                       >
-                        {item.meter_id}
+                        {item.deviceId}
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
@@ -171,7 +209,7 @@ const Page = () => {
                       <Dialog className="z-[99999] bg-white p-0">
                         <DialogTrigger asChild>
                           <span className="flex bg-accent rounded-3xl p-1 gap-2 cursor-pointer">
-                            <Image
+                            {/* <Image
                               height={40} // Adjust size to match your requirements
                               width={40} // Adjust size to match your requirements
                               alt={item.channel_name || "logo"}
@@ -182,7 +220,7 @@ const Page = () => {
                                 item.channel_image[0]
                               }
                               className="rounded-full"
-                            />
+                            /> */}
                             <p className="flex flex-col">
                               <span className="truncate w-36">
                                 {item.channel_name}
@@ -193,12 +231,12 @@ const Page = () => {
                         </DialogTrigger>
                         <DialogContent className="bg-white p-0">
                           <AccuracyCard
-                            logoSrc={
-                                item.channel_image[3] ||
-                                item.channel_image[2] ||
-                                item.channel_image[1] ||
-                                item.channel_image[0]
-                              }
+                            // logoSrc={
+                            //     item.channel_image[3] ||
+                            //     item.channel_image[2] ||
+                            //     item.channel_image[1] ||
+                            //     item.channel_image[0]
+                            //   }
                             name={item.channel_name}
                             id={item.channel_id}
                             accuracy={78}
@@ -266,149 +304,186 @@ const Page = () => {
 
   const renderConfigUpdatesContent = () => {
     switch (activeTab) {
-      case "Meter Events":
       case "Config & Update":
-      case "Meter Release Management":
-        return (
-          <div>
-            <div className="flex w-full justify-end gap-4 items-center my-3">
-              <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-                <ListPlus /> Add to List
-              </button>
-              <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-                <Paintbrush2 className=" rotate-180" />
-                Clear Selection
-              </button>
-              <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
-                <FileInput />
-                Export
-              </button>
-            </div>
-            <div className="overflow-auto bg-white rounded-xl border h-1/2">
-              <Table className="min-w-full">
-                <TableHeader>
-                  <TableRow className="bg-gray-100">
-                    <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Meter Status
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Household ID
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">Config</TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Applied Value
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Server Value
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Submitted At
-                    </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Applied At
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="p-2 text-sm font-extrabold">
-                        <Dialog className="z-[99999] bg-white p-0">
-                          <DialogTrigger asChild>
-                            <div className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between">
-                              {item.DEVICE_ID}
-                              <ChevronRight size={18} color="#2054DD" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent className="bg-white px-6 py-4">
-                            <div className="flex flex-col gap-3">
-                              <h1 className=" text-xl font-bold mb-1">
-                                Update Config
-                              </h1>
-                              <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
-                                <div className="flex flex-col p-2 text-md font-semibold">
-                                  <p>Meter Id</p> {item.DEVICE_ID}
-                                </div>
-                                <div className="flex flex-col p-2 text-md font-semibold">
-                                  <p>Present Value</p>{" "}
-                                  <p className="text-red-700">False</p>
-                                </div>
-                              </div>
+ return (
+   <div>
+     <div className="flex w-full justify-end gap-4 items-center my-3">
+       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <ListPlus /> Add to List
+       </button>
+       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <Paintbrush2 className="rotate-180" />
+         Clear Selection
+       </button>
+       <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <FileInput />
+         Export
+       </button>
+       {selectedRows.length > 0 && (
+         <Dialog>
+           <DialogTrigger>
+             <button className="flex gap-1 items-center bg-[#28a745] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
+               Update
+             </button>
+           </DialogTrigger>
+           <DialogContent className="bg-white px-6 py-4">
+             <div className="flex flex-col gap-3">
+               <h1 className="text-xl font-bold mb-1">Update Config</h1>
+               <div className="bg-gray-200 p-2 rounded-xl flex flex-col gap-3">
+                 <p>Selected Meter IDs:</p>
+                 <ul>
+                   {selectedRows.map((id) => (
+                     <li key={id} className="text-md font-semibold">
+                       {id}
+                     </li>
+                   ))}
+                 </ul>
+               </div>
+               <div className="p-2 rounded-xl flex flex-col gap-">
+                 <p>Enter Version</p>
+                 <input
+                   type="text"
+                   placeholder="v1.0.1"
+                   className="border rounded p-2"
+                 />
+               </div>
+               <div className="flex gap-3 items-center justify-end"></div>
+             </div>
+             <DialogFooter>
+               <DialogClose>
+                 <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
+                   Cancel
+                 </button>
+               </DialogClose>
+               <DialogClose>
+                 <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
+                   Send
+                 </button>
+               </DialogClose>
+             </DialogFooter>
+           </DialogContent>
+         </Dialog>
+       )}
+     </div>
+     <div className="overflow-auto bg-white rounded-xl border h-1/2">
+       <Table className="min-w-full">
+         <TableHeader>
+           <TableRow className="bg-gray-100">
+             <TableHead className="min-w-40 text-sm">Select</TableHead>
+             <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
+             <TableHead className="min-w-40 text-sm">Meter Status</TableHead>
+             <TableHead className="min-w-40 text-sm">Household ID</TableHead>
+             <TableHead className="min-w-40 text-sm">Config</TableHead>
+             <TableHead className="min-w-40 text-sm">Hardware</TableHead>
+             <TableHead className="min-w-40 text-sm">Status</TableHead>
+             <TableHead className="min-w-40 text-sm">Submitted At</TableHead>
+             <TableHead className="min-w-40 text-sm">Applied At</TableHead>
+           </TableRow>
+         </TableHeader>
+         <TableBody>
+           {data.map((item, index) => {
+             // Convert timestamp outside of JSX
+             const { utcDate, istDate } = convertUnixToUTCAndIST(
+               item.TIMESTAMP
+             );
 
-                              <div className=" p-2 rounded-xl flex flex-col gap-">
-                                <p>Change Value to</p>
-                                <div className="flex gap-3 p-2 text-md font-semibold">
-                                  <label className=" text-green-600">
-                                    <input
-                                      type="radio"
-                                      name="value"
-                                      value="true"
-                                    />{" "}
-                                    True
-                                  </label>
-                                  <label className=" text-red-600">
-                                    <input
-                                      type="radio"
-                                      name="value"
-                                      value="false"
-                                    />{" "}
-                                    False
-                                  </label>
-                                </div>
-                              </div>
-                              <div className="flex gap-3 items-center justify-end">
-                            <DialogClose asChild>yyy
-                                <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
-                                  Cancel
-                                </button>
-                              </DialogClose>
-                                
-                                  <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
-                                    OK
-                                  </button>
-                                
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded-full ${
-                            item.online ? "bg-green-500" : "bg-gray-500"
-                          } text-white`}
-                        >
-                          {item.online ? "Online" : "Offline"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.CONFIG}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.hw_version}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.alarm_type || "Pending"}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.active_sim === 1
-                          ? "Jio"
-                          : item.active_sim === 2
-                          ? "Airtel"
-                          : "Unknown"}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.location || "Dominican Republic"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        );
+             return (
+               <TableRow key={index}>
+                 <TableCell className="p-2 text-sm">
+                   <input
+                     type="checkbox"
+                     checked={selectedRows.includes(item.DEVICE_ID)}
+                     onChange={() => handleCheckboxChange(item.DEVICE_ID)}
+                   />
+                 </TableCell>
+                 <TableCell className="p-2 text-sm font-extrabold">
+                   <Dialog className="z-[99999] bg-white p-0">
+                     <DialogTrigger asChild>
+                       <div className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between">
+                         {item.DEVICE_ID}
+                         <ChevronRight size={18} color="#2054DD" />
+                       </div>
+                     </DialogTrigger>
+                     <DialogContent className="bg-white px-6 py-4">
+                       <div className="flex flex-col gap-3">
+                         <h1 className="text-xl font-bold mb-1">
+                           Update Config
+                         </h1>
+                         <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
+                           <div className="flex flex-col p-2 text-md font-semibold">
+                             <p>Meter Id</p> {item.DEVICE_ID}
+                           </div>
+                           <div className="flex flex-col p-2 text-md font-semibold">
+                             <p>Present Value</p>
+                             <p className="text-red-700">False</p>
+                           </div>
+                         </div>
+                         <div className="p-2 rounded-xl flex flex-col gap-">
+                           <p>Change Value to</p>
+                           <div className="flex gap-3 p-2 text-md font-semibold">
+                             <label className="text-green-600">
+                               <input type="radio" name="value" value="true" />{" "}
+                               True
+                             </label>
+                             <label className="text-red-600">
+                               <input type="radio" name="value" value="false" />{" "}
+                               False
+                             </label>
+                           </div>
+                         </div>
+                         <div className="flex gap-3 items-center justify-end"></div>
+                       </div>
+                       <DialogFooter>
+                         <DialogClose>
+                           <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
+                             Cancel
+                           </button>
+                         </DialogClose>
+                         <DialogClose>
+                           <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
+                             OK
+                           </button>
+                         </DialogClose>
+                       </DialogFooter>
+                     </DialogContent>
+                   </Dialog>
+                 </TableCell>
+                 <TableCell className="p-2 text-sm">
+                   <span
+                     className={`px-2 py-1 rounded-full ${
+                       item.online ? "bg-green-500" : "bg-gray-500"
+                     } text-white`}
+                   >
+                     {item.online ? "Online" : "Offline"}
+                   </span>
+                 </TableCell>
+                 <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
+                 <TableCell className="p-2 text-sm">Am_endpoint</TableCell>
+                 <TableCell className="p-2 text-sm">
+                   {item.hardware_version}
+                 </TableCell>
+                 <TableCell className="p-2 text-sm">
+                   {item.alarm_type || "Pending"}
+                 </TableCell>
+                 <TableCell className="p-2 text-sm">
+                   {item.active_sim === 1
+                     ? "Jio"
+                     : item.active_sim === 2
+                     ? "Airtel"
+                     : "Unknown"}
+                 </TableCell>
+                 <TableCell className="p-2 text-sm">
+                   <div>UTC: {utcDate}</div>
+                   <div>IST: {istDate}</div>
+                 </TableCell>
+               </TableRow>
+             );
+           })}
+         </TableBody>
+       </Table>
+     </div>
+   </div>
+ );
       default:
         return null;
     }
@@ -475,13 +550,13 @@ const Page = () => {
                       <Dialog className="z-[99999] bg-white p-0">
                         <DialogTrigger asChild>
                           <span className="flex bg-accent rounded-3xl p-1 gap-2">
-                            <Image
+                            {/* <Image
                               height={10}
                               width={10}
                               alt={item.channel_name || "logo"}
                               src={item.channel_image[0]}
                               className="size-10 rounded-full"
-                            />
+                            /> */}
                             <p className="flex flex-col">
                               <span className=" truncate w-36">
                                 {item.channel_name}
@@ -492,7 +567,7 @@ const Page = () => {
                         </DialogTrigger>
                         <DialogContent className=" bg-white p-0">
                           <AccuracyCard
-                            logoSrc={item.channel_image[0]}
+                            // logoSrc={item.channel_image[0]}
                             name={item.channel_name}
                             id={item.channel_id}
                             accuracy={78}

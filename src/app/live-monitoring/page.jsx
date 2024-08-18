@@ -51,7 +51,7 @@ const handleSearch = (filteredData) => {
     <Layout>
       <div className="relative h-screen">
         <h1 className="">Live Monitoring of Meter</h1>
-        <Map />
+        <Map devices={data} />
 
         <div className="flex items-center justify-center w-full">
           <div

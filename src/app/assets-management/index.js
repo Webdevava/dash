@@ -122,3 +122,157 @@ const Page = () => {
 };
 
 export default Page;
+
+
+"use client";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Layout from "@/components/Layout";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import LiveMonitoringChart from "@/components/LiveMonitoringChart";
+
+const Page = () => {
+  const { deviceid } = useParams();
+  const router = useRouter();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/search/all?deviceId=${deviceid}`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const result = await response.json();
+        setData(result || []);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [deviceid]);
+
+  if (loading) return <p className="text-center text-lg">Loading...</p>;
+  if (error)
+    return <p className="text-center text-lg text-red-500">Error: {error}</p>;
+
+  return (
+    <Layout>
+      <div className="relative flex flex-col p-4">
+        <div className="flex w-full justify-between items-center mb-4">
+          <h1 className="text-xl font-bold">Meter No. {deviceid} History</h1>
+
+          <button
+            onClick={() => router.back()}
+            className="px-8 py-2 bg-white text-blue-600 hover:text-white text-lg border border-blue-500 hover:bg-blue-600 transition-colors rounded-3xl"
+          >
+            Back
+          </button>
+        </div>
+
+        {data.length > 0 ? (
+          <div className="relative overflow-hidden bg-white rounded-xl border shadow-md max-h-[25vh] mb-10">
+            <div className="overflow-x-auto">
+              <div className="overflow-y-auto max-h-[25vh]">
+                <Table className="min-w-full">
+                  <TableHeader className="sticky top-0 bg-gray-100 z-10">
+                    <TableRow>
+                      <TableHead className="min-w-40 text-sm p-2">
+                        <input type="checkbox" />
+                      </TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">Meter ID</TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">Latitude</TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">Longitude</TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">HHID</TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">
+                        Online Status
+                      </TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">SIM Type</TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">
+                        Hardware Version
+                      </TableHead>
+                      <TableHead className="min-w-40 text-sm p-2">
+                        Installation Status
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="p-2 text-sm font-extrabold">
+                          <input type="checkbox" />
+                        </TableCell>
+                        <TableCell className="p-2 text-sm font-extrabold">
+                          {item.DEVICE_ID}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">{item.lat}</TableCell>
+                        <TableCell className="p-2 text-sm">{item.lon}</TableCell>
+                        <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <span
+                            className={`px-2 py-1 rounded-full ${
+                              item.connectivity_status
+                                ? "bg-green-500"
+                                : "bg-gray-500"
+                            } text-white`}
+                          >
+                            {item.connectivity_status
+                              ? "Connected"
+                              : "Disconnected"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.sim === 1
+                            ? "Jio"
+                            : item.sim === 2
+                            ? "Airtel"
+                            : "Unknown"}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.hardwareVersion}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <span
+                            className={`px-2 py-1 rounded-full ${
+                              item.installing ? "bg-green-500" : "bg-gray-500"
+                            } text-white`}
+                          >
+                            {item.installing ? "Installed" : "Uninstalled"}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-center text-lg">
+            No data available for the selected meter ID.
+          </p>
+        )}
+
+        <div>
+          <LiveMonitoringChart />
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Page;

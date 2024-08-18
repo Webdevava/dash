@@ -135,9 +135,9 @@ const Page = () => {
 
   const renderInventoryContent = () => {
     switch (activeTab) {
-      case "Meter Events":
-      case "Config & Update":
-      case "Meter Release Management":
+      case "Inventory":
+      case "Master Data":
+      case "Meter Info Conflicts":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-screen">
             <Table className="min-w-full">
@@ -194,7 +194,7 @@ const Page = () => {
                       <Dialog className="z-[99999] bg-white p-0">
                         <DialogTrigger asChild>
                           <span className="flex bg-accent rounded-3xl p-1 gap-2 cursor-pointer">
-                            <Image
+                            {/* <Image
                               height={40} // Adjust size to match your requirements
                               width={40} // Adjust size to match your requirements
                               alt={item.channel_name || "logo"}
@@ -204,6 +204,13 @@ const Page = () => {
                                 item.channel_image[1] ||
                                 item.channel_image[0]
                               }
+                              className="rounded-full"
+                            /> */}
+                            <Image
+                              height={40} // Adjust size to match your requirements
+                              width={40} // Adjust size to match your requirements
+                              alt={item.channel_name || "logo"}
+                              src={AAJ}
                               className="rounded-full"
                             />
                             <p className="flex flex-col">
@@ -216,12 +223,12 @@ const Page = () => {
                         </DialogTrigger>
                         <DialogContent className="bg-white p-0">
                           <AccuracyCard
-                            logoSrc={
-                              item.channel_image[3] ||
-                              item.channel_image[2] ||
-                              item.channel_image[1] ||
-                              item.channel_image[0]
-                            }
+                            // logoSrc={
+                            //   item.channel_image[3] ||
+                            //   item.channel_image[2] ||
+                            //   item.channel_image[1] ||
+                            //   item.channel_image[0]
+                            // }
                             name={item.channel_name}
                             id={item.channel_id}
                             accuracy={78}
@@ -379,9 +386,11 @@ const Page = () => {
 
   const renderMeterReleaseManagementContent = () => {
     switch (activeTab) {
-      case "Meter Events":
+      case "Test History":
       case "Config & Update":
-      case "Meter Release Management":
+      case "Field Status History":
+      case "HH info History":
+      case "HH field status":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-1/2">
             <Table className="min-w-full">
@@ -438,11 +447,18 @@ const Page = () => {
                       <Dialog className="z-[99999] bg-white p-0">
                         <DialogTrigger asChild>
                           <span className="flex bg-accent rounded-3xl p-1 gap-2">
-                            <Image
+                            {/* <Image
                               height={10}
                               width={10}
                               alt={item.channel_name || "logo"}
                               src={item.channel_image[0]}
+                              className="size-10 rounded-full"
+                            /> */}
+                            <Image
+                              height={10}
+                              width={10}
+                              alt={item.channel_name || "logo"}
+                              src={AAJ}
                               className="size-10 rounded-full"
                             />
                             <p className="flex flex-col">
@@ -455,7 +471,7 @@ const Page = () => {
                         </DialogTrigger>
                         <DialogContent className=" bg-white p-0">
                           <AccuracyCard
-                            logoSrc={item.channel_image[0]}
+                            // logoSrc={item.channel_image[0]}
                             name={item.channel_name}
                             id={item.channel_id}
                             accuracy={78}
@@ -526,19 +542,19 @@ const Page = () => {
       case "Inventory":
         return renderInventoryContent();
       case "Master Data":
-        return renderFileUploadAssetsContent();
+        return renderInventoryContent();
       case "Field Status History":
         return renderMeterReleaseManagementContent();
       case "Test History":
-        return <div>Alarms Content Here</div>;
+        return renderMeterReleaseManagementContent();
       case "Meter Info Conflicts":
-        return <div>Meter Summary Content Here</div>;
+        return renderInventoryContent();
       case "File Upload Assets":
         return renderFileUploadAssetsContent();
       case "HH info History":
-        return <div>Meter Summary Content Here</div>;
+        return renderMeterReleaseManagementContent();
       case "HH field status":
-        return <div>Meter Summary Content Here</div>;
+        return renderMeterReleaseManagementContent();
       default:
         return null;
     }

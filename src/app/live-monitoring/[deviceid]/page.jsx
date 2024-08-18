@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"; // Import styled table components
+import LiveMonitoringChart from "../../../../indi-dash/src/components/LiveMonitoringChart";
 
 const Page = () => {
   const { deviceid } = useParams();
@@ -155,6 +156,9 @@ const Page = () => {
             No data available for the selected meter ID.
           </p>
         )}
+        <div>
+          <LiveMonitoringChart />
+        </div>
       </div>
     </Layout>
   );
