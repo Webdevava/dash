@@ -30,7 +30,7 @@ const AlarmCard = ({
   };
 
   return (
-    <div className="px-2">
+    <div className="px-2 min-h-24">
       <div
         style={{ backgroundColor: `${color}20` }}
         className="p-2 w-full rounded-lg h-28 flex justify-between items-center relative overflow-hidden transition-all duration-300 ease-in-out"
@@ -228,7 +228,7 @@ const mapAlarmData = (alarm) => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-2 w-full ">
+      <div className="bg-white rounded-2xl p-2 w-full  min-h-24 ">
         <Slider {...settings}>
           {alarms.map((alarm, index) => (
             <AlarmCard key={index} {...alarm} />

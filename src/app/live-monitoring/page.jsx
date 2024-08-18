@@ -1,9 +1,8 @@
-// src/components/MapComponent.js
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Link from "next/link"; // Import Link component
+import Link from "next/link";
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 import "leaflet/dist/leaflet.css";
 import {
@@ -30,22 +29,40 @@ import AAJ from "../../../public/AAJ.png";
 import NBC from "../../../public/NBC.png";
 import Image from "next/image";
 import AccuracyCard from "@/components/AccuracyCard";
-// import FilterFormWithTable from "@/components/FilterFormWithTable"; // Correct path here
 import FilterForm from "@/components/FilterForm";
 
 const MapComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [data, setData] = useState([]);
+  const [queryParams, setQueryParams] = useState({}); // Store query parameters
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
-const handleSearch = (filteredData) => {
-  setData(filteredData);
-  setShowFilters(false); // Close the filter dropdown after search
-};
+  const handleSearch = (filteredData, params) => {
+    setData(filteredData);
+    setQueryParams(params); // Update query parameters
+    setShowFilters(false); // Close the filter dropdown after search
+  };
+
+  const handleRefresh = async () => {
+    if (Object.keys(queryParams).length > 0) {
+      try {
+        const response = await axios.get("/api/your-endpoint", {
+          params: queryParams,
+        });
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Optionally, you can fetch initial data or handle any other side effects here
+  }, []);
 
   return (
     <Layout>
@@ -55,7 +72,7 @@ const handleSearch = (filteredData) => {
 
         <div className="flex items-center justify-center w-full">
           <div
-            className={`absolute bottom-0 left-0 right-0 ml-5 rounded-xl bg-white p-4 shadow-md w-[96%] TableRowansition-all duration-300 ease-in-out z-[9] ${"h-3/4"}`}
+            className={`absolute bottom-0 left-0 right-0 ml-5 rounded-xl bg-white p-4 shadow-md w-[96%] transition-all duration-300 ease-in-out z-[9] ${"h-3/4"}`}
           >
             <div className="flex items-center justify-start mb-4 gap-4">
               <div className="flex rounded-3xl w-fit bg-accent/70 mr-2">
@@ -77,7 +94,10 @@ const handleSearch = (filteredData) => {
                   <span>Search by Filter</span>
                   {showFilters ? <ChevronUp /> : <ChevronDown />}
                 </button>
-                <button className="p-2 text-gray-600 rounded-full bg-gray-300">
+                <button
+                  onClick={handleRefresh} // Add click handler for refresh button
+                  className="p-2 text-gray-600 rounded-full bg-gray-300"
+                >
                   <RotateCcw size={28} />
                 </button>
               </div>
@@ -132,10 +152,10 @@ const handleSearch = (filteredData) => {
                       </TableCell>
                       <TableCell className="p-2 text-sm font-extrabold">
                         <Link
-                          href={`/live-monitoring/${item.deviceId}`}
+                          href={`/live-monitoring/${item.DEVICE_ID}`}
                           className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                         >
-                          {item.deviceId}
+                          {item.DEVICE_ID}
                           <ChevronRight size={18} color="#2054DD" />
                         </Link>
                       </TableCell>
@@ -143,29 +163,33 @@ const handleSearch = (filteredData) => {
                         <Dialog className="z-[99999] bg-white p-0">
                           <DialogTrigger asChild>
                             <div className="flex bg-accent rounded-3xl p-1 gap-2 text-xs font-extrabold">
-                              <Image
+                              <img
                                 height={10}
                                 width={10}
-                                alt={item.channel_name || "logo"}
-                                src={AAJ}
+                                alt={item.accuracyResult.logo_logo || "logo"}
+                                src={item.images[0]}
                                 className="size-10 rounded-full"
                               />
                               <p className="flex flex-col">
                                 <span className=" truncate w-36">
-                                  {item.channel_name}
+                                  {item.logoResult.channelName}
                                 </span>
-                                <span>{item.channel_id}</span>
+                                <span>{item.logoResult.channelName}</span>
                               </p>
                             </div>
                           </DialogTrigger>
-                          <DialogContent className=" bg-white p-0">
+                          <DialogContent className="bg-white p-0">
                             <AccuracyCard
-                              logoSrc={AAJ}
-                              name={item.channel_name}
-                              id={item.channel_id}
-                              accuracy={78}
-                              audioMatching={86}
-                              logoDetection={75}
+                              logoSrc={item.images[0]}
+                              name={item.logoResult.channelName}
+                              id={item.logoResult.channelName}
+                              accuracy={Math.round(
+                                (item.logoResult.accuracy * 100 + 100) / 2
+                              )}
+                              audioMatching={Math.round(100)}
+                              logoDetection={Math.round(
+                                item.logoResult.accuracy * 100
+                              )}
                             />
                           </DialogContent>
                         </Dialog>
@@ -205,14 +229,15 @@ const handleSearch = (filteredData) => {
                           ? "Jio"
                           : item.sim === 2
                           ? "Airtel"
-                          : "Unknown"}
-                      </TableCell>
-
-                      <TableCell className="p-2 text-sm">
-                        {item.region || "India"}
+                          : item.sim === 3
+                          ? "BSNL"
+                          : "Other"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.lat} / {item.lon}
+                        {item.region}
+                      </TableCell>
+                      <TableCell className="p-2 text-sm">
+                        {item.lat} | {item.lon}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
                         {item.radius || "3km"}

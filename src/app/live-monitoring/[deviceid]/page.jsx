@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"; // Import styled table components
-import LiveMonitoringChart from "../../../../indi-dash/src/components/LiveMonitoringChart";
+import LiveMonitoringChart from "@/components/LiveMonitoringChart";
 
 const Page = () => {
   const { deviceid } = useParams();
@@ -23,7 +23,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/search/all?deviceId=${deviceid}`
+          `http://localhost:5000/search/live?deviceId=${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -44,6 +44,21 @@ const Page = () => {
   if (error)
     return <p className="text-center text-lg text-red-500">Error: {error}</p>;
 
+  // Sort data by timestamp in descending order and take the last 10 entries
+  const sortedData = data
+    .filter((item) => item.logo_logo?.ts) // Filter out items without a timestamp
+    .sort((a, b) => b.logo_logo.ts - a.logo_logo.ts) // Sort in descending order
+    .slice(0, 10); // Take the latest 10 items
+
+  // Prepare data for the chart
+  const chartData = sortedData.map((item) => ({
+    date: item.logo_logo?.ts
+      ? new Date(item.logo_logo.ts * 1000).toLocaleDateString()
+      : "N/A",
+    audioConfidence: 100,
+    logoConfidence: item.logo_logo?.accuracy * 100 || 0,
+  }));
+
   return (
     <Layout>
       <div className="relative h-screen flex flex-col p-4">
@@ -63,88 +78,36 @@ const Page = () => {
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow className="bg-gray-100">
-                  <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">Latitude</TableHead>
-                  <TableHead className="min-w-40 text-sm">Longitude</TableHead>
-                  <TableHead className="min-w-40 text-sm">HHID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Online Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">SIM Type</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Hardware Version
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Installation Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">Logos</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Fingerprints
-                  </TableHead>
+                  <TableHead className="min-w-40 text-sm">Device ID</TableHead>
+                  <TableHead className="min-w-40 text-sm">Audio Logo</TableHead>
+                  <TableHead className="min-w-40 text-sm">Channel ID</TableHead>
+                  <TableHead className="min-w-40 text-sm">Accuracy</TableHead>
+                  <TableHead className="min-w-40 text-sm">Timestamp</TableHead>
+                  <TableHead className="min-w-40 text-sm">Priority</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((item, index) => (
+                {sortedData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="p-2 text-sm font-extrabold">
-                      {item.DEVICE_ID}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">{item.lat}</TableCell>
-                    <TableCell className="p-2 text-sm">{item.lon}</TableCell>
-                    <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.connectivity_status
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.connectivity_status
-                          ? "Connected"
-                          : "Disconnected"}
-                      </span>
+                      {item.deviceId}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.sim === 1
-                        ? "Jio"
-                        : item.sim === 2
-                        ? "Airtel"
-                        : "Unknown"}
+                      {item.audio_logo}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hardwareVersion}
+                      {item.logo_logo?.Channel_ID || "N/A"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.installing ? "bg-green-500" : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.installing ? "Installed" : "Uninstalled"}
-                      </span>
+                      {Math.round(item.logo_logo?.accuracy * 100) || "N/A"}%
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.logos.map((logo, idx) => (
-                        <div key={idx}>
-                          <p>
-                            Timestamp:{" "}
-                            {new Date(logo.timestamp).toLocaleString()}
-                          </p>
-                          <p>Channel ID: {logo.channel_id}</p>
-                          <p>Accuracy: {logo.accuracy}</p>
-                        </div>
-                      ))}
+                      {item.logo_logo?.ts
+                        ? new Date(item.logo_logo.ts * 1000).toLocaleString()
+                        : "N/A"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.fingerprints.map((fp, idx) => (
-                        <div key={idx}>
-                          <p>
-                            Timestamp: {new Date(fp.timestamp).toLocaleString()}
-                          </p>
-                          <p>Channel ID: {fp.channel_id}</p>
-                        </div>
-                      ))}
+                      {item.priority}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -157,7 +120,7 @@ const Page = () => {
           </p>
         )}
         <div>
-          <LiveMonitoringChart />
+          <LiveMonitoringChart data={chartData} />
         </div>
       </div>
     </Layout>

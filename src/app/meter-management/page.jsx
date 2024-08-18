@@ -34,6 +34,7 @@ import {
   Paintbrush,
   FileInput,
   Paintbrush2,
+  History,
 } from "lucide-react";
 import ConfigFilterForm from "@/components/meter-management/ConfigFilterForm";
 import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
@@ -49,15 +50,15 @@ const Page = () => {
   const [showPopover, setShowPopover] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
 
-    const handleCheckboxChange = (deviceId) => {
+    const handleCheckboxChange = (DEVICE_ID) => {
       setSelectedRows((prevSelectedRows) =>
-        prevSelectedRows.includes(deviceId)
-          ? prevSelectedRows.filter((id) => id !== deviceId)
-          : [...prevSelectedRows, deviceId]
+        prevSelectedRows.includes(DEVICE_ID)
+          ? prevSelectedRows.filter((id) => id !== DEVICE_ID)
+          : [...prevSelectedRows, DEVICE_ID]
       );
     };
 
-    const isRowSelected = (deviceId) => selectedRows.includes(deviceId);
+    const isRowSelected = (DEVICE_ID) => selectedRows.includes(DEVICE_ID);
 
     const handleUpdateClick = () => {
       // Handle the update action here
@@ -85,6 +86,49 @@ const Page = () => {
     setData(filteredData);
     setShowFilters(false);
   };
+
+
+    const [version, setVersion] = useState("");
+    const [responseMessage, setResponseMessage] = useState("");
+    const [responseClass, setResponseClass] = useState("");
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Ensure the version is formatted correctly
+  const formattedVersion = version ? `v${version.trim()}` : "";
+
+  console.log("Selected Rows:", selectedRows); // Add this line to debug
+
+  try {
+    const response = await fetch("http://localhost:5000/mqtt/publish", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        DEVICE_ID: selectedRows.join(","), // Assuming DEVICE_ID is a comma-separated list
+        topic: "apm/server/data",
+        message: formattedVersion,
+      }),
+    });
+
+    const responseData = await response.text();
+    if (response.ok) {
+      setResponseClass("success");
+      setResponseMessage(`Success: ${responseData}`);
+    } else {
+      setResponseClass("error");
+      setResponseMessage(`Error: ${responseData}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    setResponseClass("error");
+    setResponseMessage("An error occurred while sending the message");
+  }
+};
+
+
 
   const refreshTable = async () => {
     try {
@@ -127,7 +171,7 @@ const Page = () => {
     if (selectAll) {
       setSelectedRows(new Set());
     } else {
-      setSelectedRows(new Set(data.map((item) => item.meter_id)));
+      setSelectedRows(new Set(data.map((item) => item.DEVICE_ID)));
     }
     setSelectAll(!selectAll);
   };
@@ -163,9 +207,6 @@ const Page = () => {
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
                   <TableHead className="min-w-40 text-sm">
-                    Channel Detection
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">
@@ -179,7 +220,7 @@ const Page = () => {
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Alarm Type</TableHead>
                   <TableHead className="min-w-40 text-sm">Network</TableHead>
-                  <TableHead className="min-w-40 text-sm">Location</TableHead>
+                  <TableHead className="min-w-40 text-sm">region</TableHead>
                   <TableHead className="min-w-40 text-sm">Lat & Lon</TableHead>
                   <TableHead className="min-w-40 text-sm">Radius</TableHead>
                 </TableRow>
@@ -190,62 +231,22 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.meter_status ? "bg-green-500" : "bg-gray-500"
+                          item.alive ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.meter_status ? "Online" : "Offline"}
+                        {item.alive ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <Link
-                        href={`/live-monitoring/${item.deviceId}`}
+                        href={`/live-monitoring/${item.DEVICE_ID}`}
                         className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                       >
-                        {item.deviceId}
+                        {item.DEVICE_ID}
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <Dialog className="z-[99999] bg-white p-0">
-                        <DialogTrigger asChild>
-                          <span className="flex bg-accent rounded-3xl p-1 gap-2 cursor-pointer">
-                            {/* <Image
-                              height={40} // Adjust size to match your requirements
-                              width={40} // Adjust size to match your requirements
-                              alt={item.channel_name || "logo"}
-                              src={
-                                item.channel_image[3] ||
-                                item.channel_image[2] ||
-                                item.channel_image[1] ||
-                                item.channel_image[0]
-                              }
-                              className="rounded-full"
-                            /> */}
-                            <p className="flex flex-col">
-                              <span className="truncate w-36">
-                                {item.channel_name}
-                              </span>
-                              <span>{item.channel_id}</span>
-                            </p>
-                          </span>
-                        </DialogTrigger>
-                        <DialogContent className="bg-white p-0">
-                          <AccuracyCard
-                            // logoSrc={
-                            //     item.channel_image[3] ||
-                            //     item.channel_image[2] ||
-                            //     item.channel_image[1] ||
-                            //     item.channel_image[0]
-                            //   }
-                            name={item.channel_name}
-                            id={item.channel_id}
-                            accuracy={78}
-                            audioMatching={86}
-                            logoDetection={75}
-                          />
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
+                    
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -270,20 +271,20 @@ const Page = () => {
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hw_version}
+                      {item.hardwareVersion}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.alarm_type || "Pending"}
+                      {item.tamperAlarmAlertType || "Pending"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.active_sim === 1
+                      {item.sim === 1
                         ? "Jio"
-                        : item.active_sim === 2
+                        : item.sim === 2
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.location || "Dominican Republic"}
+                      {item.region || "Dominican Republic"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}
@@ -308,21 +309,11 @@ const Page = () => {
  return (
    <div>
      <div className="flex w-full justify-end gap-4 items-center my-3">
-       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <ListPlus /> Add to List
-       </button>
-       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <Paintbrush2 className="rotate-180" />
-         Clear Selection
-       </button>
-       <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <FileInput />
-         Export
-       </button>
        {selectedRows.length > 0 && (
          <Dialog>
            <DialogTrigger>
-             <button className="flex gap-1 items-center bg-[#28a745] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
+             <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+               <History/>
                Update
              </button>
            </DialogTrigger>
@@ -339,15 +330,21 @@ const Page = () => {
                    ))}
                  </ul>
                </div>
-               <div className="p-2 rounded-xl flex flex-col gap-">
+               <div className="p-2 rounded-xl flex flex-col gap-3">
                  <p>Enter Version</p>
                  <input
                    type="text"
                    placeholder="v1.0.1"
                    className="border rounded p-2"
+                   value={version}
+                   onChange={(e) => setVersion(e.target.value)}
                  />
                </div>
-               <div className="flex gap-3 items-center justify-end"></div>
+               {responseMessage && (
+                 <div className={`response-message ${responseClass}`}>
+                   {responseMessage}
+                 </div>
+               )}
              </div>
              <DialogFooter>
                <DialogClose>
@@ -356,7 +353,10 @@ const Page = () => {
                  </button>
                </DialogClose>
                <DialogClose>
-                 <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
+                 <button
+                   className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl"
+                   onClick={handleSubmit}
+                 >
                    Send
                  </button>
                </DialogClose>
@@ -364,6 +364,17 @@ const Page = () => {
            </DialogContent>
          </Dialog>
        )}
+       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <ListPlus /> Add to List
+       </button>
+       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <Paintbrush2 className="rotate-180" />
+         Clear Selection
+       </button>
+       <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
+         <FileInput />
+         Export
+       </button>
      </div>
      <div className="overflow-auto bg-white rounded-xl border h-1/2">
        <Table className="min-w-full">
@@ -451,10 +462,10 @@ const Page = () => {
                  <TableCell className="p-2 text-sm">
                    <span
                      className={`px-2 py-1 rounded-full ${
-                       item.online ? "bg-green-500" : "bg-gray-500"
+                       item.aliveState ? "bg-green-500" : "bg-gray-500"
                      } text-white`}
                    >
-                     {item.online ? "Online" : "Offline"}
+                     {item.aliveState ? "Online" : "Offline"}
                    </span>
                  </TableCell>
                  <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
@@ -463,12 +474,12 @@ const Page = () => {
                    {item.hardware_version}
                  </TableCell>
                  <TableCell className="p-2 text-sm">
-                   {item.alarm_type || "Pending"}
+                   {item.tamperAlarmAlertType || "Pending"}
                  </TableCell>
                  <TableCell className="p-2 text-sm">
-                   {item.active_sim === 1
+                   {item.sim === 1
                      ? "Jio"
-                     : item.active_sim === 2
+                     : item.sim === 2
                      ? "Airtel"
                      : "Unknown"}
                  </TableCell>
@@ -491,8 +502,6 @@ const Page = () => {
 
   const renderMeterReleaseManagementContent = () => {
     switch (activeTab) {
-      case "Meter Events":
-      case "Config & Update":
       case "Meter Release Management":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-1/2">
@@ -503,9 +512,7 @@ const Page = () => {
                     Meter Status
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Channel Detection
-                  </TableHead>
+
                   <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
@@ -520,7 +527,7 @@ const Page = () => {
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Alarm Type</TableHead>
                   <TableHead className="min-w-40 text-sm">Network</TableHead>
-                  <TableHead className="min-w-40 text-sm">Location</TableHead>
+                  <TableHead className="min-w-40 text-sm">region</TableHead>
                   <TableHead className="min-w-40 text-sm">Lat & Lon</TableHead>
                   <TableHead className="min-w-40 text-sm">Radius</TableHead>
                 </TableRow>
@@ -531,51 +538,20 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.meter_status ? "bg-green-500" : "bg-gray-500"
+                          item.aliveState ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.meter_status ? "Online" : "Offline"}
+                        {item.aliveState ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <Link
-                        href={`/live-monitoring/${item.meter_id}`}
+                        href={`/live-monitoring/${item.DEVICE_ID}`}
                         className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                       >
-                        {item.meter_id}
+                        {item.DEVICE_ID}
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <Dialog className="z-[99999] bg-white p-0">
-                        <DialogTrigger asChild>
-                          <span className="flex bg-accent rounded-3xl p-1 gap-2">
-                            {/* <Image
-                              height={10}
-                              width={10}
-                              alt={item.channel_name || "logo"}
-                              src={item.channel_image[0]}
-                              className="size-10 rounded-full"
-                            /> */}
-                            <p className="flex flex-col">
-                              <span className=" truncate w-36">
-                                {item.channel_name}
-                              </span>
-                              <span>{item.channel_id}</span>
-                            </p>
-                          </span>
-                        </DialogTrigger>
-                        <DialogContent className=" bg-white p-0">
-                          <AccuracyCard
-                            // logoSrc={item.channel_image[0]}
-                            name={item.channel_name}
-                            id={item.channel_id}
-                            accuracy={78}
-                            audioMatching={86}
-                            logoDetection={75}
-                          />
-                        </DialogContent>
-                      </Dialog>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       <span
@@ -601,20 +577,20 @@ const Page = () => {
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hw_version}
+                      {item.hardwareVersion}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.alarm_type || "Pending"}
+                      {item.tamperAlarmAlertType || "Pending"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.active_sim === 1
+                      {item.sim === 1
                         ? "Jio"
-                        : item.active_sim === 2
+                        : item.sim === 2
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.location || "Dominican Republic"}
+                      {item.region || "Dominican Republic"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}

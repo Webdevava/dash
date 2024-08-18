@@ -1,5 +1,10 @@
 "use client";
-import { Calendar, ChartNoAxesColumn, ChartSpline, EllipsisVertical } from "lucide-react";
+import {
+  Calendar,
+  ChartNoAxesColumn,
+  ChartSpline,
+  EllipsisVertical,
+} from "lucide-react";
 import React from "react";
 import {
   ComposedChart,
@@ -12,27 +17,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Static data with dates on the X-axis and percentages for audio and logo confidence
-const staticData = [
-  { date: "1", audioConfidence: 85, logoConfidence: 90 },
-  { date: "2", audioConfidence: 78, logoConfidence: 85 },
-  { date: "3", audioConfidence: 92, logoConfidence: 88 },
-  { date: "4", audioConfidence: 80, logoConfidence: 82 },
-  { date: "5", audioConfidence: 75, logoConfidence: 87 },
-  { date: "6", audioConfidence: 89, logoConfidence: 90 },
-  { date: "7", audioConfidence: 84, logoConfidence: 86 },
-  { date: "8", audioConfidence: 77, logoConfidence: 80 },
-  { date: "9", audioConfidence: 88, logoConfidence: 91 },
-  { date: "10", audioConfidence: 90, logoConfidence: 85 },
-];
+const LiveMonitoringChart = ({ data }) => {
+  // Ensure data is sorted in ascending order by date
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
 
-// Calculate average accuracy for each data point
-const processedData = staticData.map((item) => ({
-  ...item,
-  averageAccuracy: (item.audioConfidence + item.logoConfidence) / 2,
-}));
+  // Calculate average of audioConfidence and logoConfidence for each data point
+  const dataWithAverage = sortedData.map((entry) => ({
+    ...entry,
+    averageConfidence: (entry.audioConfidence + entry.logoConfidence) / 2,
+  }));
 
-const LiveMonitoringChart = () => {
   return (
     <div
       style={{
@@ -41,7 +37,6 @@ const LiveMonitoringChart = () => {
         borderRadius: "20px",
         padding: "20px 10px",
       }}
-
       className="flex flex-col gap-6 h-96"
     >
       <div className="flex items-center justify-between gap-3 ">
@@ -81,9 +76,9 @@ const LiveMonitoringChart = () => {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%" className="">
+      <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
-          data={processedData}
+          data={dataWithAverage}
           margin={{
             top: 20,
             right: 20,
@@ -92,7 +87,14 @@ const LiveMonitoringChart = () => {
           }}
         >
           <CartesianGrid stroke="#f5f5f5" />
-          <XAxis dataKey="date" />
+          <XAxis
+            dataKey="date"
+            tickFormatter={(tick) => {
+              const date = new Date(tick);
+              return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+            }}
+            reversed={true} // Reverse the X-axis so that latest values are on the right
+          />
           <YAxis domain={[0, 100]} />
           <Tooltip />
           <Bar
@@ -111,11 +113,11 @@ const LiveMonitoringChart = () => {
           />
           <Line
             type="monotone"
-            dataKey="averageAccuracy"
+            dataKey="averageConfidence"
             stroke="#34C759"
-            strokeWidth={4} // Thicker line
-            dot={{ stroke: "#34C759", strokeWidth: 12 }} // Style for line dots
-            name="Average Accuracy"
+            strokeWidth={4}
+            dot={true} // Add dots to the line
+            name="Average Confidence"
           />
         </ComposedChart>
       </ResponsiveContainer>

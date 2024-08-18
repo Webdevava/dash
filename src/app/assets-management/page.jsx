@@ -111,7 +111,7 @@ const Page = () => {
     if (selectAll) {
       setSelectedRows(new Set());
     } else {
-      setSelectedRows(new Set(data.map((item) => item.meter_id)));
+      setSelectedRows(new Set(data.map((item) => item.DEVICE_ID)));
     }
     setSelectAll(!selectAll);
   };
@@ -147,9 +147,7 @@ const Page = () => {
                     Meter Status
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Channel Detection
-                  </TableHead>
+                  
                   <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
@@ -175,69 +173,22 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.meter_status ? "bg-green-500" : "bg-gray-500"
+                          item.meterSuccess ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.meter_status ? "Online" : "Offline"}
+                        {item.meterSuccess ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <Link
-                        href={`/live-monitoring/${item.meter_id}`}
+                        href={`/live-monitoring/${item.DEVICE_ID}`}
                         className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                       >
-                        {item.meter_id}
+                        {item.DEVICE_ID}
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <Dialog className="z-[99999] bg-white p-0">
-                        <DialogTrigger asChild>
-                          <span className="flex bg-accent rounded-3xl p-1 gap-2 cursor-pointer">
-                            {/* <Image
-                              height={40} // Adjust size to match your requirements
-                              width={40} // Adjust size to match your requirements
-                              alt={item.channel_name || "logo"}
-                              src={
-                                item.channel_image[3] ||
-                                item.channel_image[2] ||
-                                item.channel_image[1] ||
-                                item.channel_image[0]
-                              }
-                              className="rounded-full"
-                            /> */}
-                            <Image
-                              height={40} // Adjust size to match your requirements
-                              width={40} // Adjust size to match your requirements
-                              alt={item.channel_name || "logo"}
-                              src={AAJ}
-                              className="rounded-full"
-                            />
-                            <p className="flex flex-col">
-                              <span className="truncate w-36">
-                                {item.channel_name}
-                              </span>
-                              <span>{item.channel_id}</span>
-                            </p>
-                          </span>
-                        </DialogTrigger>
-                        <DialogContent className="bg-white p-0">
-                          <AccuracyCard
-                            // logoSrc={
-                            //   item.channel_image[3] ||
-                            //   item.channel_image[2] ||
-                            //   item.channel_image[1] ||
-                            //   item.channel_image[0]
-                            // }
-                            name={item.channel_name}
-                            id={item.channel_id}
-                            accuracy={78}
-                            audioMatching={86}
-                            logoDetection={75}
-                          />
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
+                    
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -255,27 +206,27 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.hh_status ? "bg-green-500" : "bg-gray-500"
+                          item.installing ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.hh_status ? "Installed" : "Uninstalled"}
+                        {item.installing ? "Installed" : "Uninstalled"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hw_version}
+                      {item.hardwareVersion}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.alarm_type || "Pending"}
+                      {item.tamperAlarmAlertType || "Pending"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.active_sim === 1
+                      {item.sim === 1
                         ? "Jio"
-                        : item.active_sim === 2
+                        : item.sim === 2
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.location || "Dominican Republic"}
+                      {item.region}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}
@@ -400,9 +351,7 @@ const Page = () => {
                     Meter Status
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Channel Detection
-                  </TableHead>
+                  
                   <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
@@ -428,59 +377,22 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.meter_status ? "bg-green-500" : "bg-gray-500"
+                          item.meterSuccess ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.meter_status ? "Online" : "Offline"}
+                        {item.meterSuccess ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <Link
-                        href={`/live-monitoring/${item.meter_id}`}
+                        href={`/live-monitoring/${item.DEVICE_ID}`}
                         className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
                       >
-                        {item.meter_id}
+                        {item.DEVICE_ID}
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <Dialog className="z-[99999] bg-white p-0">
-                        <DialogTrigger asChild>
-                          <span className="flex bg-accent rounded-3xl p-1 gap-2">
-                            {/* <Image
-                              height={10}
-                              width={10}
-                              alt={item.channel_name || "logo"}
-                              src={item.channel_image[0]}
-                              className="size-10 rounded-full"
-                            /> */}
-                            <Image
-                              height={10}
-                              width={10}
-                              alt={item.channel_name || "logo"}
-                              src={AAJ}
-                              className="size-10 rounded-full"
-                            />
-                            <p className="flex flex-col">
-                              <span className=" truncate w-36">
-                                {item.channel_name}
-                              </span>
-                              <span>{item.channel_id}</span>
-                            </p>
-                          </span>
-                        </DialogTrigger>
-                        <DialogContent className=" bg-white p-0">
-                          <AccuracyCard
-                            // logoSrc={item.channel_image[0]}
-                            name={item.channel_name}
-                            id={item.channel_id}
-                            accuracy={78}
-                            audioMatching={86}
-                            logoDetection={75}
-                          />
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
+                   
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -498,27 +410,27 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.hh_status ? "bg-green-500" : "bg-gray-500"
+                          item.installing ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.hh_status ? "Installed" : "Uninstalled"}
+                        {item.installing ? "Installed" : "Uninstalled"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hw_version}
+                      {item.hardwareVersion}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.alarm_type || "Pending"}
+                      {item.tamperAlarmAlertType || "Pending"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.active_sim === 1
+                      {item.sim === 1
                         ? "Jio"
-                        : item.active_sim === 2
+                        : item.sim === 2
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.location || "Dominican Republic"}
+                      {item.region}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}
