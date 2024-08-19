@@ -28,7 +28,7 @@ export default function Map({ devices }) {
   const center =
     devices && devices.length > 0
       ? [devices.lat, devices.lon]
-      : [19.505, 75.09];
+      : [18.5526 , 73.9485];
 
   return (
     <div className="p-2 bg-white h-2/5 w-full rounded-xl">

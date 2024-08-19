@@ -23,7 +23,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/search/live?deviceId=${deviceid}`
+          `http://localhost:5000/search/live?deviceId=${deviceid}` // Ensure this endpoint returns the expected data
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -44,19 +44,18 @@ const Page = () => {
   if (error)
     return <p className="text-center text-lg text-red-500">Error: {error}</p>;
 
-  // Sort data by timestamp in descending order and take the last 10 entries
+  // Sort data by timestamp in descending order
   const sortedData = data
-    .filter((item) => item.logo_logo?.ts) // Filter out items without a timestamp
-    .sort((a, b) => b.logo_logo.ts - a.logo_logo.ts) // Sort in descending order
-    .slice(0, 10); // Take the latest 10 items
+    .filter((item) => item.logoResult?.ts) // Filter out items without a timestamp
+    .sort((a, b) => b.logoResult.ts - a.logoResult.ts); // Sort in descending order
 
   // Prepare data for the chart
   const chartData = sortedData.map((item) => ({
-    date: item.logo_logo?.ts
-      ? new Date(item.logo_logo.ts * 1000).toLocaleDateString()
+    date: item.logoResult?.ts
+      ? new Date(item.logoResult.ts * 1000).toLocaleDateString()
       : "N/A",
     audioConfidence: 100,
-    logoConfidence: item.logo_logo?.accuracy * 100 || 0,
+    logoConfidence: item.logoResult?.accuracy * 100 || 0,
   }));
 
   return (
@@ -79,8 +78,13 @@ const Page = () => {
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="min-w-40 text-sm">Device ID</TableHead>
+                  <TableHead className="min-w-40 text-sm">
+                    Channel Detected
+                  </TableHead>
                   <TableHead className="min-w-40 text-sm">Audio Logo</TableHead>
-                  <TableHead className="min-w-40 text-sm">Channel ID</TableHead>
+                  <TableHead className="min-w-40 text-sm">
+                    Channel Name
+                  </TableHead>
                   <TableHead className="min-w-40 text-sm">Accuracy</TableHead>
                   <TableHead className="min-w-40 text-sm">Timestamp</TableHead>
                   <TableHead className="min-w-40 text-sm">Priority</TableHead>
@@ -90,24 +94,35 @@ const Page = () => {
                 {sortedData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="p-2 text-sm font-extrabold">
-                      {item.deviceId}
+                      {item.DEVICE_ID}
+                    </TableCell>
+                    <TableCell className="p-2 text-sm font-extrabold">
+                      <div className="bg-gray-300 p-1 rounded-3xl flex items-center gap-2">
+                        <img
+                          src={item.images[1] || item.images[0]}
+                          alt="logo"
+                          className="h-10 w-10 rounded-3xl"
+                        />
+                        <p>
+                          {item.accuracyResult.logo_logo ||
+                            item.accuracyResult.audio_logo}
+                        </p>
+                      </div>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.audio_logo}
+                      {item.accuracyResult.audio_logo}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.logo_logo?.Channel_ID || "N/A"}
+                      {item.logoResult.channelName || "N/A"}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {Math.round(item.logo_logo?.accuracy * 100) || "N/A"}%
+                      {Math.round(item.logoResult?.accuracy * 100) || "N/A"}%
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.logo_logo?.ts
-                        ? new Date(item.logo_logo.ts * 1000).toLocaleString()
-                        : "N/A"}
+                      {item.accuracyResult?.ts}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.priority}
+                      {item.accuracyResult.priority || "N/A"}
                     </TableCell>
                   </TableRow>
                 ))}

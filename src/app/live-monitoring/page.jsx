@@ -50,9 +50,12 @@ const MapComponent = () => {
   const handleRefresh = async () => {
     if (Object.keys(queryParams).length > 0) {
       try {
-        const response = await axios.get("/api/your-endpoint", {
-          params: queryParams,
-        });
+        const response = await axios.get(
+          "http://localhost:5000/search/latest",
+          {
+            params: queryParams,
+          }
+        );
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -167,20 +170,20 @@ const MapComponent = () => {
                                 height={10}
                                 width={10}
                                 alt={item.accuracyResult.logo_logo || "logo"}
-                                src={item.images[0]}
+                                src={item.images[1] || item.images[0]}
                                 className="size-10 rounded-full"
                               />
                               <p className="flex flex-col">
                                 <span className=" truncate w-36">
-                                  {item.logoResult.channelName}
+                                  {item.accuracyResult.logo_logo}
                                 </span>
-                                <span>{item.logoResult.channelName}</span>
+                                <span>{item.accuracyResult.logo_logo}</span>
                               </p>
                             </div>
                           </DialogTrigger>
                           <DialogContent className="bg-white p-0">
                             <AccuracyCard
-                              logoSrc={item.images[0]}
+                              logoSrc={item.images[1] || item.images[0]}
                               name={item.logoResult.channelName}
                               id={item.logoResult.channelName}
                               accuracy={Math.round(
@@ -240,7 +243,7 @@ const MapComponent = () => {
                         {item.lat} | {item.lon}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.radius || "3km"}
+                        {new Date(item.logoResult.ts * 1000).toLocaleString()}
                       </TableCell>
                     </TableRow>
                   ))}

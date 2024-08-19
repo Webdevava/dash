@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import ConfigFilterForm from "@/components/meter-management/ConfigFilterForm";
 import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
+import MeterEventsForm from "@/components/meter-management/MeterEventsForm";
 
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -48,24 +49,23 @@ const Page = () => {
   const [selectAll, setSelectAll] = useState(false);
 
   const [showPopover, setShowPopover] = useState(false);
-    const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
-    const handleCheckboxChange = (DEVICE_ID) => {
-      setSelectedRows((prevSelectedRows) =>
-        prevSelectedRows.includes(DEVICE_ID)
-          ? prevSelectedRows.filter((id) => id !== DEVICE_ID)
-          : [...prevSelectedRows, DEVICE_ID]
-      );
-    };
+  const handleCheckboxChange = (DEVICE_ID) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(DEVICE_ID)
+        ? prevSelectedRows.filter((id) => id !== DEVICE_ID)
+        : [...prevSelectedRows, DEVICE_ID]
+    );
+  };
 
-    const isRowSelected = (DEVICE_ID) => selectedRows.includes(DEVICE_ID);
+  const isRowSelected = (DEVICE_ID) => selectedRows.includes(DEVICE_ID);
 
-    const handleUpdateClick = () => {
-      // Handle the update action here
-      console.log("Updating rows: ", selectedRows);
-    };
+  const handleUpdateClick = () => {
+    // Handle the update action here
+    console.log("Updating rows: ", selectedRows);
+  };
 
-  
   function convertUnixToUTCAndIST(unixTimestamp) {
     const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
 
@@ -87,48 +87,45 @@ const Page = () => {
     setShowFilters(false);
   };
 
+  const [version, setVersion] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+  const [responseClass, setResponseClass] = useState("");
 
-    const [version, setVersion] = useState("");
-    const [responseMessage, setResponseMessage] = useState("");
-    const [responseClass, setResponseClass] = useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    // Ensure the version is formatted correctly
+    const formattedVersion = version ? version : "";
 
-  // Ensure the version is formatted correctly
-  const formattedVersion = version ? `v${version.trim()}` : "";
+    console.log("Selected Rows:", selectedRows); // Add this line to debug
 
-  console.log("Selected Rows:", selectedRows); // Add this line to debug
+    try {
+      const response = await fetch("http://localhost:5000/mqtt/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          DEVICE_ID: selectedRows.join(","), // Assuming DEVICE_ID is a comma-separated list
+          topic: "apm/server/data",
+          message: formattedVersion,
+        }),
+      });
 
-  try {
-    const response = await fetch("http://localhost:5000/mqtt/publish", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        DEVICE_ID: selectedRows.join(","), // Assuming DEVICE_ID is a comma-separated list
-        topic: "apm/server/data",
-        message: formattedVersion,
-      }),
-    });
-
-    const responseData = await response.text();
-    if (response.ok) {
-      setResponseClass("success");
-      setResponseMessage(`Success: ${responseData}`);
-    } else {
+      const responseData = await response.text();
+      if (response.ok) {
+        setResponseClass("success");
+        setResponseMessage(`Success: ${responseData}`);
+      } else {
+        setResponseClass("error");
+        setResponseMessage(`Error: ${responseData}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
       setResponseClass("error");
-      setResponseMessage(`Error: ${responseData}`);
+      setResponseMessage("An error occurred while sending the message");
     }
-  } catch (error) {
-    console.error("Error:", error);
-    setResponseClass("error");
-    setResponseMessage("An error occurred while sending the message");
-  }
-};
-
-
+  };
 
   const refreshTable = async () => {
     try {
@@ -143,17 +140,16 @@ const handleSubmit = async (e) => {
     }
   };
 
-    const fetchData = async (deviceIdMin, deviceIdMax) => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/devices/search?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
-        );
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
+  const fetchData = async (deviceIdMin, deviceIdMax) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/devices/search?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+      );
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleRowSelect = (id) => {
     setSelectedRows((prevSelectedRows) => {
@@ -231,10 +227,10 @@ const handleSubmit = async (e) => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.alive ? "bg-green-500" : "bg-gray-500"
+                          item.meterSuccess ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.alive ? "Online" : "Offline"}
+                        {item.meterSuccess ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
@@ -246,7 +242,7 @@ const handleSubmit = async (e) => {
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
-                    
+
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -264,10 +260,10 @@ const handleSubmit = async (e) => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.hh_status ? "bg-green-500" : "bg-gray-500"
+                          item.installing ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.hh_status ? "Installed" : "Uninstalled"}
+                        {item.installing ? "Installed" : "Uninstalled"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
@@ -306,195 +302,213 @@ const handleSubmit = async (e) => {
   const renderConfigUpdatesContent = () => {
     switch (activeTab) {
       case "Config & Update":
- return (
-   <div>
-     <div className="flex w-full justify-end gap-4 items-center my-3">
-       {selectedRows.length > 0 && (
-         <Dialog>
-           <DialogTrigger>
-             <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-               <History/>
-               Update
-             </button>
-           </DialogTrigger>
-           <DialogContent className="bg-white px-6 py-4">
-             <div className="flex flex-col gap-3">
-               <h1 className="text-xl font-bold mb-1">Update Config</h1>
-               <div className="bg-gray-200 p-2 rounded-xl flex flex-col gap-3">
-                 <p>Selected Meter IDs:</p>
-                 <ul>
-                   {selectedRows.map((id) => (
-                     <li key={id} className="text-md font-semibold">
-                       {id}
-                     </li>
-                   ))}
-                 </ul>
-               </div>
-               <div className="p-2 rounded-xl flex flex-col gap-3">
-                 <p>Enter Version</p>
-                 <input
-                   type="text"
-                   placeholder="v1.0.1"
-                   className="border rounded p-2"
-                   value={version}
-                   onChange={(e) => setVersion(e.target.value)}
-                 />
-               </div>
-               {responseMessage && (
-                 <div className={`response-message ${responseClass}`}>
-                   {responseMessage}
-                 </div>
-               )}
-             </div>
-             <DialogFooter>
-               <DialogClose>
-                 <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
-                   Cancel
-                 </button>
-               </DialogClose>
-               <DialogClose>
-                 <button
-                   className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl"
-                   onClick={handleSubmit}
-                 >
-                   Send
-                 </button>
-               </DialogClose>
-             </DialogFooter>
-           </DialogContent>
-         </Dialog>
-       )}
-       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <ListPlus /> Add to List
-       </button>
-       <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <Paintbrush2 className="rotate-180" />
-         Clear Selection
-       </button>
-       <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
-         <FileInput />
-         Export
-       </button>
-     </div>
-     <div className="overflow-auto bg-white rounded-xl border h-1/2">
-       <Table className="min-w-full">
-         <TableHeader>
-           <TableRow className="bg-gray-100">
-             <TableHead className="min-w-40 text-sm">Select</TableHead>
-             <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-             <TableHead className="min-w-40 text-sm">Meter Status</TableHead>
-             <TableHead className="min-w-40 text-sm">Household ID</TableHead>
-             <TableHead className="min-w-40 text-sm">Config</TableHead>
-             <TableHead className="min-w-40 text-sm">Hardware</TableHead>
-             <TableHead className="min-w-40 text-sm">Status</TableHead>
-             <TableHead className="min-w-40 text-sm">Submitted At</TableHead>
-             <TableHead className="min-w-40 text-sm">Applied At</TableHead>
-           </TableRow>
-         </TableHeader>
-         <TableBody>
-           {data.map((item, index) => {
-             // Convert timestamp outside of JSX
-             const { utcDate, istDate } = convertUnixToUTCAndIST(
-               item.TIMESTAMP
-             );
+        return (
+          <div>
+            <div className="flex w-full justify-end gap-4 items-center my-3">
+              {selectedRows.length > 0 && (
+                <Dialog>
+                  <DialogTrigger>
+                    <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+                      <History />
+                      Update
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-white px-6 py-4">
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-xl font-bold mb-1">Update Config</h1>
+                      <div className="bg-gray-200 p-2 rounded-xl flex flex-col gap-3">
+                        <p>Selected Meter IDs:</p>
+                        <ul>
+                          {selectedRows.map((id) => (
+                            <li key={id} className="text-md font-semibold">
+                              {id}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="p-2 rounded-xl flex flex-col gap-3">
+                        <p>Enter Version</p>
+                        <input
+                          type="text"
+                          placeholder="v1.0.1"
+                          className="border rounded p-2"
+                          value={version}
+                          onChange={(e) => setVersion(e.target.value)}
+                        />
+                      </div>
+                      {responseMessage && (
+                        <div className={`response-message ${responseClass}`}>
+                          {responseMessage}
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <DialogClose>
+                        <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
+                          Cancel
+                        </button>
+                      </DialogClose>
+                      <DialogClose>
+                        <button
+                          className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl"
+                          onClick={handleSubmit}
+                        >
+                          Send
+                        </button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+              <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+                <ListPlus /> Add to List
+              </button>
+              <button className="flex gap-1 items-center px-6 py-2 text-lg font-semibold border rounded-3xl">
+                <Paintbrush2 className="rotate-180" />
+                Clear Selection
+              </button>
+              <button className="flex gap-1 items-center bg-[#2054DD] text-white px-6 py-2 text-lg font-semibold border rounded-3xl">
+                <FileInput />
+                Export
+              </button>
+            </div>
+            <div className="overflow-auto bg-white rounded-xl border h-1/2">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow className="bg-gray-100">
+                    <TableHead className="min-w-40 text-sm">Select</TableHead>
+                    <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Meter Status
+                    </TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Household ID
+                    </TableHead>
+                    <TableHead className="min-w-40 text-sm">Config</TableHead>
+                    <TableHead className="min-w-40 text-sm">Hardware</TableHead>
+                    <TableHead className="min-w-40 text-sm">Status</TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Submitted At
+                    </TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Applied At
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.map((item, index) => {
+                    // Convert timestamp outside of JSX
+                    const { utcDate, istDate } = convertUnixToUTCAndIST(
+                      item.TIMESTAMP
+                    );
 
-             return (
-               <TableRow key={index}>
-                 <TableCell className="p-2 text-sm">
-                   <input
-                     type="checkbox"
-                     checked={selectedRows.includes(item.DEVICE_ID)}
-                     onChange={() => handleCheckboxChange(item.DEVICE_ID)}
-                   />
-                 </TableCell>
-                 <TableCell className="p-2 text-sm font-extrabold">
-                   <Dialog className="z-[99999] bg-white p-0">
-                     <DialogTrigger asChild>
-                       <div className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between">
-                         {item.DEVICE_ID}
-                         <ChevronRight size={18} color="#2054DD" />
-                       </div>
-                     </DialogTrigger>
-                     <DialogContent className="bg-white px-6 py-4">
-                       <div className="flex flex-col gap-3">
-                         <h1 className="text-xl font-bold mb-1">
-                           Update Config
-                         </h1>
-                         <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
-                           <div className="flex flex-col p-2 text-md font-semibold">
-                             <p>Meter Id</p> {item.DEVICE_ID}
-                           </div>
-                           <div className="flex flex-col p-2 text-md font-semibold">
-                             <p>Present Value</p>
-                             <p className="text-red-700">False</p>
-                           </div>
-                         </div>
-                         <div className="p-2 rounded-xl flex flex-col gap-">
-                           <p>Change Value to</p>
-                           <div className="flex gap-3 p-2 text-md font-semibold">
-                             <label className="text-green-600">
-                               <input type="radio" name="value" value="true" />{" "}
-                               True
-                             </label>
-                             <label className="text-red-600">
-                               <input type="radio" name="value" value="false" />{" "}
-                               False
-                             </label>
-                           </div>
-                         </div>
-                         <div className="flex gap-3 items-center justify-end"></div>
-                       </div>
-                       <DialogFooter>
-                         <DialogClose>
-                           <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
-                             Cancel
-                           </button>
-                         </DialogClose>
-                         <DialogClose>
-                           <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
-                             OK
-                           </button>
-                         </DialogClose>
-                       </DialogFooter>
-                     </DialogContent>
-                   </Dialog>
-                 </TableCell>
-                 <TableCell className="p-2 text-sm">
-                   <span
-                     className={`px-2 py-1 rounded-full ${
-                       item.aliveState ? "bg-green-500" : "bg-gray-500"
-                     } text-white`}
-                   >
-                     {item.aliveState ? "Online" : "Offline"}
-                   </span>
-                 </TableCell>
-                 <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
-                 <TableCell className="p-2 text-sm">Am_endpoint</TableCell>
-                 <TableCell className="p-2 text-sm">
-                   {item.hardware_version}
-                 </TableCell>
-                 <TableCell className="p-2 text-sm">
-                   {item.tamperAlarmAlertType || "Pending"}
-                 </TableCell>
-                 <TableCell className="p-2 text-sm">
-                   {item.sim === 1
-                     ? "Jio"
-                     : item.sim === 2
-                     ? "Airtel"
-                     : "Unknown"}
-                 </TableCell>
-                 <TableCell className="p-2 text-sm">
-                   <div>UTC: {utcDate}</div>
-                   <div>IST: {istDate}</div>
-                 </TableCell>
-               </TableRow>
-             );
-           })}
-         </TableBody>
-       </Table>
-     </div>
-   </div>
- );
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="p-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.includes(item.DEVICE_ID)}
+                            onChange={() =>
+                              handleCheckboxChange(item.DEVICE_ID)
+                            }
+                          />
+                        </TableCell>
+                        <TableCell className="p-2 text-sm font-extrabold">
+                          <Dialog className="z-[99999] bg-white p-0">
+                            <DialogTrigger asChild>
+                              <div className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between">
+                                {item.DEVICE_ID}
+                                <ChevronRight size={18} color="#2054DD" />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="bg-white px-6 py-4">
+                              <div className="flex flex-col gap-3">
+                                <h1 className="text-xl font-bold mb-1">
+                                  Update Config
+                                </h1>
+                                <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
+                                  <div className="flex flex-col p-2 text-md font-semibold">
+                                    <p>Meter Id</p> {item.DEVICE_ID}
+                                  </div>
+                                  <div className="flex flex-col p-2 text-md font-semibold">
+                                    <p>Present Value</p>
+                                    <p className="text-red-700">False</p>
+                                  </div>
+                                </div>
+                                <div className="p-2 rounded-xl flex flex-col gap-">
+                                  <p>Change Value to</p>
+                                  <div className="flex gap-3 p-2 text-md font-semibold">
+                                    <label className="text-green-600">
+                                      <input
+                                        type="radio"
+                                        name="value"
+                                        value="true"
+                                      />{" "}
+                                      True
+                                    </label>
+                                    <label className="text-red-600">
+                                      <input
+                                        type="radio"
+                                        name="value"
+                                        value="false"
+                                      />{" "}
+                                      False
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="flex gap-3 items-center justify-end"></div>
+                              </div>
+                              <DialogFooter>
+                                <DialogClose>
+                                  <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
+                                    Cancel
+                                  </button>
+                                </DialogClose>
+                                <DialogClose>
+                                  <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
+                                    OK
+                                  </button>
+                                </DialogClose>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <span
+                            className={`px-2 py-1 rounded-full ${
+                              item.online ? "bg-green-500" : "bg-gray-500"
+                            } text-white`}
+                          >
+                            {item.online ? "Online" : "Offline"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.hhid}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.CONFIG}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.hardware_version}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.tamperAlarmAlertType || "Pending"}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.CONFIG_TS}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <div>UTC: {utcDate}</div>
+                          <div>IST: {istDate}</div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -538,10 +552,10 @@ const handleSubmit = async (e) => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.aliveState ? "bg-green-500" : "bg-gray-500"
+                          item.meterSuccess ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.aliveState ? "Online" : "Offline"}
+                        {item.meterSuccess ? "Online" : "Offline"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
@@ -570,10 +584,10 @@ const handleSubmit = async (e) => {
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
-                          item.hh_status ? "bg-green-500" : "bg-gray-500"
+                          item.installing ? "bg-green-500" : "bg-gray-500"
                         } text-white`}
                       >
-                        {item.hh_status ? "Installed" : "Uninstalled"}
+                        {item.installing ? "Installed" : "Uninstalled"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
@@ -759,6 +773,8 @@ const handleSubmit = async (e) => {
                 ) : activeSubTab === "History" ? (
                   <ConfigHistoryForm onSearch={handleSearch} />
                 ) : null
+              ) : activeTab === "Meter Events" ? (
+                <MeterEventsForm onSearch={handleSearch} />
               ) : (
                 <FilterForm onSearch={handleSearch} />
               ))}

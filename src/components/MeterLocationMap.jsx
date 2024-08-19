@@ -143,9 +143,7 @@ const fetchLocations = async () => {
                       key={option}
                       className={`p-2 text-xs cursor-pointer hover:bg-gray-100 flex gap-1 items-center`}
                       style={{
-                        color: getColorForMeterType(
-                          option.split(" ")[1] + ""
-                        ),
+                        color: getColorForMeterType(option.split(" ")[1] + ""),
                       }}
                       onClick={() => handleDropdownOptionClick(option)}
                     >
@@ -160,7 +158,7 @@ const fetchLocations = async () => {
         </div>
       </div>
       <MapContainer
-        center={[19.7515, 75.7139]}
+        center={[18.5526, 73.9485]}
         zoom={7}
         style={{
           height: "87%",

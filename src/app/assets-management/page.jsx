@@ -417,7 +417,7 @@ const Page = () => {
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.hardwareVersion}
+                      {item.hardware_version}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.tamperAlarmAlertType || "Pending"}
@@ -448,6 +448,7 @@ const Page = () => {
         return null;
     }
   };
+  
 
   const renderContent = () => {
     switch (activeTab) {
