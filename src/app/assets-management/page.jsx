@@ -43,7 +43,7 @@ import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [data, setData] = useState([]);
-  const [activeTab, setActiveTab] = useState("Meter Events");
+  const [activeTab, setActiveTab] = useState("Inventory");
   const [activeSubTab, setActiveSubTab] = useState("Records");
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
