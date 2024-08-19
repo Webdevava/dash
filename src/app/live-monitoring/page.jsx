@@ -147,10 +147,10 @@ const MapComponent = () => {
                       <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.meterSuccess ? "bg-green-500" : "bg-gray-500"
+                            true ? "bg-green-500" : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.meterSuccess ? "Online" : "Offline"}
+                          {true ? "Online" : "Offline"}
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm font-extrabold">
@@ -169,23 +169,23 @@ const MapComponent = () => {
                               <img
                                 height={10}
                                 width={10}
-                                alt={item.accuracyResult.logo_logo || "logo"}
+                                alt={item.accuracyResult.channelId || "logo"}
                                 src={item.images[1] || item.images[0]}
                                 className="size-10 rounded-full"
                               />
                               <p className="flex flex-col">
                                 <span className=" truncate w-36">
-                                  {item.accuracyResult.logo_logo}
+                                  {item.accuracyResult.channelId}
                                 </span>
-                                <span>{item.accuracyResult.logo_logo}</span>
+                                <span>{item.accuracyResult.channelId}</span>
                               </p>
                             </div>
                           </DialogTrigger>
                           <DialogContent className="bg-white p-0">
                             <AccuracyCard
                               logoSrc={item.images[1] || item.images[0]}
-                              name={item.logoResult.channelName}
-                              id={item.logoResult.channelName}
+                              name={item.accuracyResult.channelId}
+                              id={item.accuracyResult.channelId}
                               accuracy={Math.round(
                                 (item.logoResult.accuracy * 100 + 100) / 2
                               )}
@@ -201,12 +201,10 @@ const MapComponent = () => {
                       <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.connectivity_status
-                              ? "bg-green-500"
-                              : "bg-gray-500"
+                            true ? "bg-green-500" : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.connectivity_status
+                          {true
                             ? "Connected"
                             : "Disconnected"}
                         </span>

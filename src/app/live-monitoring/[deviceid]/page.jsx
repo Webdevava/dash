@@ -9,13 +9,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"; // Import styled table components
+} from "@/components/ui/table";
 import LiveMonitoringChart from "@/components/LiveMonitoringChart";
 
 const Page = () => {
   const { deviceid } = useParams();
   const router = useRouter();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,13 +23,18 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/search/live?deviceId=${deviceid}` // Ensure this endpoint returns the expected data
+          `http://localhost:5000/search/live?deviceId=${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const result = await response.json();
-        setData(result || []);
+        if (result.logoResults && Array.isArray(result.logoResults)) {
+          setData(result);
+        } else {
+          console.error("Data is not in the expected format:", result);
+          setError("Unexpected data format");
+        }
       } catch (error) {
         setError(error.message);
       } finally {
@@ -37,25 +42,26 @@ const Page = () => {
       }
     };
 
-    fetchData();
+    fetchData(); // Fetch data on initial render
+
+    const intervalId = setInterval(fetchData, 5000); // Set up interval to fetch data every 5 seconds
+
+    return () => clearInterval(intervalId); // Clear interval on component unmount
   }, [deviceid]);
 
   if (loading) return <p className="text-center text-lg">Loading...</p>;
   if (error)
     return <p className="text-center text-lg text-red-500">Error: {error}</p>;
 
-  // Sort data by timestamp in descending order
-  const sortedData = data
-    .filter((item) => item.logoResult?.ts) // Filter out items without a timestamp
-    .sort((a, b) => b.logoResult.ts - a.logoResult.ts); // Sort in descending order
+  const logoResults = data.logoResults || [];
+  const sortedData = logoResults
+    .filter((item) => item.accuracy)
+    .sort((a, b) => b.ts - a.ts);
 
-  // Prepare data for the chart
   const chartData = sortedData.map((item) => ({
-    date: item.logoResult?.ts
-      ? new Date(item.logoResult.ts * 1000).toLocaleDateString()
-      : "N/A",
+    date: item.ts ? new Date(item.ts * 1000).toLocaleString() : "N/A",
+    logoConfidence: item.accuracy * 100,
     audioConfidence: 100,
-    logoConfidence: item.logoResult?.accuracy * 100 || 0,
   }));
 
   return (
@@ -72,16 +78,12 @@ const Page = () => {
           </button>
         </div>
 
-        {data.length > 0 ? (
+        {logoResults.length > 0 ? (
           <div className="overflow-auto bg-white rounded-xl border shadow-md max-h-[25vh] mb-10">
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="min-w-40 text-sm">Device ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Channel Detected
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">Audio Logo</TableHead>
                   <TableHead className="min-w-40 text-sm">
                     Channel Name
                   </TableHead>
@@ -94,35 +96,30 @@ const Page = () => {
                 {sortedData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="p-2 text-sm font-extrabold">
-                      {item.DEVICE_ID}
+                      {data.DEVICE_ID}
                     </TableCell>
                     <TableCell className="p-2 text-sm font-extrabold">
                       <div className="bg-gray-300 p-1 rounded-3xl flex items-center gap-2">
                         <img
-                          src={item.images[1] || item.images[0]}
+                          src={
+                            data.images[0][0] ||
+                            "https://via.placeholder.com/150"
+                          } // Fallback image
                           alt="logo"
                           className="h-10 w-10 rounded-3xl"
                         />
-                        <p>
-                          {item.accuracyResult.logo_logo ||
-                            item.accuracyResult.audio_logo}
-                        </p>
+                        <p>{data.accuracyResults[0].Channel_ID}</p>
                       </div>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.accuracyResult.audio_logo}
+                      {Math.round(item.accuracy * 100) || "N/A"}%
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.logoResult.channelName || "N/A"}
+                      {new Date(item.ts * 1000).toLocaleString()}
                     </TableCell>
+
                     <TableCell className="p-2 text-sm">
-                      {Math.round(item.logoResult?.accuracy * 100) || "N/A"}%
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.accuracyResult?.ts}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.accuracyResult.priority || "N/A"}
+                      {data.accuracyResults[0]?.Priority || "None"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -131,7 +128,7 @@ const Page = () => {
           </div>
         ) : (
           <p className="text-center text-lg">
-            No data available for the selected meter ID.
+            No logo results available for the selected meter ID.
           </p>
         )}
         <div>

@@ -23,11 +23,17 @@ const LiveMonitoringChart = ({ data }) => {
     (a, b) => new Date(a.date) - new Date(b.date)
   );
 
-  // Calculate average of audioConfidence and logoConfidence for each data point
   const dataWithAverage = sortedData.map((entry) => ({
     ...entry,
-    averageConfidence: (entry.audioConfidence + entry.logoConfidence) / 2,
+    audioConfidence: 100,
+    averageConfidence: (100 + entry.logoConfidence) / 2,
   }));
+
+  // Get current date in format "MMM DD"
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+  });
 
   return (
     <div
@@ -59,7 +65,7 @@ const LiveMonitoringChart = ({ data }) => {
         </div>
         <div className="flex items-center justify-between gap-3">
           <div className="flex gap-6 font-bold text-[#2054DD] bg-[#CFDCFF] w-fit p-2 rounded-3xl">
-            <p>Aug 15</p> <Calendar />
+            <p>{currentDate}</p> <Calendar />
           </div>
           <div className="w-fit border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 text-[14px]">
             <ul className="flex items-center justify-between">
@@ -91,9 +97,9 @@ const LiveMonitoringChart = ({ data }) => {
             dataKey="date"
             tickFormatter={(tick) => {
               const date = new Date(tick);
-              return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+              return `${date.toLocaleTimeString()}`;
             }}
-            reversed={true} // Reverse the X-axis so that latest values are on the right
+            reversed={false} // Ensure the axis is in ascending order
           />
           <YAxis domain={[0, 100]} />
           <Tooltip />
@@ -102,21 +108,21 @@ const LiveMonitoringChart = ({ data }) => {
             barSize={10}
             fill="#32ADE6"
             name="Audio Confidence"
-            radius={[10, 10, 0, 0]} // Rounded corners for the bars
+            radius={[10, 10, 0, 0]}
           />
           <Bar
             dataKey="logoConfidence"
             barSize={10}
             fill="#AF52DE"
             name="Logo Confidence"
-            radius={[10, 10, 0, 0]} // Rounded corners for the bars
+            radius={[10, 10, 0, 0]}
           />
           <Line
             type="monotone"
             dataKey="averageConfidence"
             stroke="#34C759"
             strokeWidth={4}
-            dot={true} // Add dots to the line
+            dot={true}
             name="Average Confidence"
           />
         </ComposedChart>

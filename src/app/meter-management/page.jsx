@@ -51,6 +51,8 @@ const Page = () => {
   const [showPopover, setShowPopover] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
 
+  const currentTime = new Date().toLocaleTimeString();
+
   const handleCheckboxChange = (DEVICE_ID) => {
     setSelectedRows((prevSelectedRows) =>
       prevSelectedRows.includes(DEVICE_ID)
@@ -205,6 +207,7 @@ const Page = () => {
                   <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
+                  <TableHead className="min-w-40 text-sm">Temprature</TableHead>
                   <TableHead className="min-w-40 text-sm">
                     Household ID
                   </TableHead>
@@ -218,7 +221,7 @@ const Page = () => {
                   <TableHead className="min-w-40 text-sm">Network</TableHead>
                   <TableHead className="min-w-40 text-sm">region</TableHead>
                   <TableHead className="min-w-40 text-sm">Lat & Lon</TableHead>
-                  <TableHead className="min-w-40 text-sm">Radius</TableHead>
+                  <TableHead className="min-w-40 text-sm">Time</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -256,6 +259,7 @@ const Page = () => {
                           : "Disconnected"}
                       </span>
                     </TableCell>
+                    <TableCell className="p-2 text-sm">{item.temp}</TableCell>
                     <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
                     <TableCell className="p-2 text-sm">
                       <span
@@ -285,9 +289,7 @@ const Page = () => {
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}
                     </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.radius || "3km"}
-                    </TableCell>
+                    <TableCell className="p-2 text-sm">{currentTime}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -390,18 +392,11 @@ const Page = () => {
                     <TableHead className="min-w-40 text-sm">
                       Submitted At
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Applied At
-                    </TableHead>
+                    
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((item, index) => {
-                    // Convert timestamp outside of JSX
-                    const { utcDate, istDate } = convertUnixToUTCAndIST(
-                      item.TIMESTAMP
-                    );
-
                     return (
                       <TableRow key={index}>
                         <TableCell className="p-2 text-sm">
@@ -476,10 +471,10 @@ const Page = () => {
                         <TableCell className="p-2 text-sm">
                           <span
                             className={`px-2 py-1 rounded-full ${
-                              item.online ? "bg-green-500" : "bg-gray-500"
+                              true ? "bg-green-500" : "bg-gray-500"
                             } text-white`}
                           >
-                            {item.online ? "Online" : "Offline"}
+                            {true ? "Online" : "Offline"}
                           </span>
                         </TableCell>
                         <TableCell className="p-2 text-sm">
@@ -497,10 +492,7 @@ const Page = () => {
                         <TableCell className="p-2 text-sm">
                           {item.CONFIG_TS}
                         </TableCell>
-                        <TableCell className="p-2 text-sm">
-                          <div>UTC: {utcDate}</div>
-                          <div>IST: {istDate}</div>
-                        </TableCell>
+                        
                       </TableRow>
                     );
                   })}

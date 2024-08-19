@@ -16,9 +16,8 @@ const ConfigFilterForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = deviceId
-        ? `http://localhost:5000/search/config/${deviceId}` // Specific device
-        : "http://localhost:5000/search/config"; // All devices
+      const endpoint = "http://localhost:5000/search/config"
+// All devices
 
       const response = await axios.get(endpoint);
       setSearchResults(response.data); // Save results to Zustand store
