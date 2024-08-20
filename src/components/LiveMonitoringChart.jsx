@@ -1,11 +1,11 @@
 "use client";
+import React, { useState } from "react";
 import {
   Calendar,
   ChartNoAxesColumn,
   ChartSpline,
   EllipsisVertical,
 } from "lucide-react";
-import React from "react";
 import {
   ComposedChart,
   Bar,
@@ -18,6 +18,8 @@ import {
 } from "recharts";
 
 const LiveMonitoringChart = ({ data }) => {
+  const [timePeriod, setTimePeriod] = useState("Day");
+
   // Ensure data is sorted in ascending order by date
   const sortedData = [...data].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
@@ -28,6 +30,23 @@ const LiveMonitoringChart = ({ data }) => {
     audioConfidence: 100,
     averageConfidence: (100 + entry.logoConfidence) / 2,
   }));
+
+  // Filter data based on the selected time period
+  const filteredData = dataWithAverage.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    const now = new Date();
+
+    switch (timePeriod) {
+      case "Day":
+        return entryDate >= new Date(now.setDate(now.getDate() - 1));
+      case "Week":
+        return entryDate >= new Date(now.setDate(now.getDate() - 7));
+      case "Month":
+        return entryDate >= new Date(now.setMonth(now.getMonth() - 1));
+      default:
+        return true;
+    }
+  });
 
   // Get current date in format "MMM DD"
   const currentDate = new Date().toLocaleDateString("en-US", {
@@ -69,11 +88,19 @@ const LiveMonitoringChart = ({ data }) => {
           </div>
           <div className="w-fit border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 text-[14px]">
             <ul className="flex items-center justify-between">
-              <li className="bg-primary rounded-3xl px-3 py-1 text-white font-bold">
-                Day
-              </li>
-              <li className="rounded-3xl px-3 py-1">Week</li>
-              <li className="rounded-3xl px-3 py-1">Month</li>
+              {["Day", "Week", "Month"].map((period) => (
+                <li
+                  key={period}
+                  onClick={() => setTimePeriod(period)}
+                  className={`rounded-3xl px-3 py-1 cursor-pointer ${
+                    timePeriod === period
+                      ? "bg-primary text-white font-bold"
+                      : ""
+                  }`}
+                >
+                  {period}
+                </li>
+              ))}
             </ul>
           </div>
           <div className="p-1 rounded-full bg-[#CFDCFF] h-10 w-10 flex items-center justify-center">
@@ -84,7 +111,7 @@ const LiveMonitoringChart = ({ data }) => {
 
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
-          data={dataWithAverage}
+          data={filteredData}
           margin={{
             top: 20,
             right: 20,

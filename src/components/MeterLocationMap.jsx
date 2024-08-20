@@ -25,26 +25,25 @@ const MeterLocationMap = () => {
     fetchLocations();
   }, [selectedMeter]);
 
-const fetchLocations = async () => {
-  try {
-    let endpoint = "http://localhost:5000/location/locations";
-    if (selectedMeter !== "all") {
-      const hardwareVersion = selectedMeter.split(" ")[1];
-      endpoint = `http://localhost:5000/location/locations/hardware_version/${hardwareVersion}`;
+  const fetchLocations = async () => {
+    try {
+      let endpoint = "http://localhost:5000/location/locations";
+      if (selectedMeter !== "all") {
+        const hardwareVersion = selectedMeter;
+        endpoint = `http://localhost:5000/location/locations/hardware_version/${hardwareVersion}`;
+      }
+      const response = await axios.get(endpoint);
+      const formattedLocations = response.data.map((location) => ({
+        type: `${location.hardware_version}`,
+        lat: location.lat,
+        lng: location.lon,
+        color: getColorForMeterType(`${location.hardware_version}`),
+      }));
+      setMeterLocations(formattedLocations);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
     }
-    const response = await axios.get(endpoint);
-    const formattedLocations = response.data.map((location) => ({
-      type: `${location.hardware_version}`, // Adjusted to use hardware_version
-      lat: location.lat,
-      lng: location.lon,
-      color: getColorForMeterType(`${location.hardware_version}`), // Adjusted to use hardware_version
-    }));
-    setMeterLocations(formattedLocations);
-  } catch (error) {
-    console.error("Error fetching locations:", error);
-  }
-};
-
+  };
 
   const getColorForMeterType = (type) => {
     switch (type) {

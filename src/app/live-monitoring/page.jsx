@@ -169,8 +169,11 @@ const MapComponent = () => {
                               <img
                                 height={10}
                                 width={10}
-                                alt={item.accuracyResult.channelId || "logo"}
-                                src={item.images[1] || item.images[0]}
+                                alt={item.accuracyResult?.channelId || "logo"}
+                                src={
+                                  item.images?.[0] ||
+                                  "/path/to/fallback-image.png"
+                                } // Add a fallback image here
                                 className="size-10 rounded-full"
                               />
                               <p className="flex flex-col">
@@ -204,9 +207,7 @@ const MapComponent = () => {
                             true ? "bg-green-500" : "bg-gray-500"
                           } text-white`}
                         >
-                          {true
-                            ? "Connected"
-                            : "Disconnected"}
+                          {true ? "Connected" : "Disconnected"}
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm">{item.hhid}</TableCell>

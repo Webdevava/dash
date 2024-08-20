@@ -42,7 +42,9 @@ const AlarmCard = ({
           <div className="gap-2 flex flex-col h-full">
             <Icon style={{ color: color }} className="text-2xl mb-2" />
             <p className="font-[900] text-sm">{title}</p>
-            <p className="text-xs text-gray-800">{time}</p>
+            <p className="text-xs text-gray-800">
+              {new Date(1724067914 * 1000).toLocaleString()}
+            </p>
           </div>
         </div>
         <div className="flex h-full">

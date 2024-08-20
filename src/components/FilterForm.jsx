@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
@@ -26,8 +26,7 @@ const FilterForm = ({ onSearch }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchSearchResults = async () => {
     try {
       const response = await axios.get("http://localhost:5000/search/latest", {
         params: filters,
@@ -37,6 +36,19 @@ const FilterForm = ({ onSearch }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchSearchResults();
+    }, 5000); // Fetch data every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [filters]); // Dependencies array to trigger useEffect when filters change
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetchSearchResults();
   };
 
   return (
