@@ -138,7 +138,7 @@ const MapComponent = () => {
                     <TableHead className="min-w-40 text-sm">
                       Lat & Lon
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">Radius</TableHead>
+                    <TableHead className="min-w-40 text-sm">Time&Date</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -165,7 +165,7 @@ const MapComponent = () => {
                       <TableCell className="p-2 text-sm">
                         <Dialog className="z-[99999] bg-white p-0">
                           <DialogTrigger asChild>
-                            <div className="flex bg-accent rounded-3xl p-1 gap-2 text-xs font-extrabold">
+                            <div className="flex justify-start items-center bg-accent rounded-3xl p-1 gap-2 text-xs font-extrabold">
                               <img
                                 height={10}
                                 width={10}
@@ -176,17 +176,20 @@ const MapComponent = () => {
                                 } // Add a fallback image here
                                 className="size-10 rounded-full"
                               />
-                              <p className="flex flex-col">
-                                <span className=" truncate w-36">
+                             
+                                <span className="">
                                   {item.accuracyResult.channelId}
                                 </span>
-                                <span>{item.accuracyResult.channelId}</span>
-                              </p>
+                             
                             </div>
                           </DialogTrigger>
                           <DialogContent className="bg-white p-0">
                             <AccuracyCard
-                              logoSrc={item.images[1] || item.images[0]}
+                              logoSrc={item.images[0]}
+                              ts={new Date(
+                                item.logoResult.ts * 1000
+                              ).toLocaleString()}
+                              deviceId={item.DEVICE_ID}
                               name={item.accuracyResult.channelId}
                               id={item.accuracyResult.channelId}
                               accuracy={Math.round(

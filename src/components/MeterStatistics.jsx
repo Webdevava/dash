@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -19,6 +19,19 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+const getLast6DaysLabels = () => {
+  const labels = [];
+  const today = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    labels.push(
+      date.toLocaleDateString("en-US", { day: "numeric", month: "short" })
+    );
+  }
+  return labels;
+};
 
 const MeterStatistics = () => {
   const [activeButton, setActiveButton] = useState("Installed");
@@ -55,6 +68,7 @@ const MeterStatistics = () => {
   };
 
   const chartData = generateChartData();
+  const labels = getLast6DaysLabels(); // Get last 6 days labels
 
   const getAllMetersData = () => {
     return {
@@ -86,7 +100,7 @@ const MeterStatistics = () => {
   };
 
   const data = {
-    labels: ["29 Jan", "12 Feb", "26 Feb", "11 Mar", "25 Mar", "8 Apr"],
+    labels: labels, // Use the last 6 days as labels
     datasets:
       activeMeter === "All"
         ? [
@@ -146,6 +160,17 @@ const MeterStatistics = () => {
         },
         ticks: {
           padding: 10,
+          callback: function (value) {
+            return value; // Display the labels
+          },
+        },
+        title: {
+          display: true,
+          text: "Date", // Adding the x-axis title
+          color: "#000", // Adjust color if needed
+          font: {
+            size: 14, // Adjust font size if needed
+          },
         },
       },
       y: {
@@ -156,6 +181,17 @@ const MeterStatistics = () => {
         },
         ticks: {
           padding: 10,
+          callback: function (value) {
+            return value; // Display the labels
+          },
+        },
+        title: {
+          display: true,
+          text: "No. of Meters", // Adding the y-axis title
+          color: "#000", // Adjust color if needed
+          font: {
+            size: 14, // Adjust font size if needed
+          },
         },
       },
     },

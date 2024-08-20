@@ -6,6 +6,8 @@ const AccuracyCard = ({
   logoSrc,
   name,
   id,
+  deviceId,
+  ts,
   accuracy,
   audioMatching,
   logoDetection,
@@ -27,9 +29,12 @@ const AccuracyCard = ({
           height={64}
           className="rounded-full object-cover"
         />
-        <div className="ml-4">
-          <h2 className="font-bold text-xl">{name}</h2>
-          <p className="text-gray-600 text-sm">{id}</p>
+        <div className="ml-4 w-full flex justify-between  items-center">
+          <div className="">
+            <h2 className="font-bold text-xl">{name}</h2>
+            <p className="text-gray-600 text-sm">{deviceId}</p>
+          </div>
+          <p className="text-xs">{ts}</p>
         </div>
       </div>
 

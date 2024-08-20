@@ -16,6 +16,7 @@ const AlarmCard = ({
   icon: Icon,
   title,
   time,
+  ts,
   color,
   deviceId,
   alertName,
@@ -43,7 +44,7 @@ const AlarmCard = ({
             <Icon style={{ color: color }} className="text-2xl mb-2" />
             <p className="font-[900] text-sm">{title}</p>
             <p className="text-xs text-gray-800">
-              {new Date(1724067914 * 1000).toLocaleString()}
+              {new Date(ts * 1000).toLocaleString()}
             </p>
           </div>
         </div>
@@ -142,6 +143,7 @@ const mapAlarmData = (alarm) => {
     icon: alertInfo.icon,
     title: alertInfo.title,
     time: new Date(alarm.TS).toLocaleString(),
+    ts: alarm.TS,
     color: alarmColor,
     status: alarm.AlertType.toLowerCase(),
     deviceId: alarm.DEVICE_ID,

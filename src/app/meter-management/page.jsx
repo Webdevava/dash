@@ -201,7 +201,7 @@ const Page = () => {
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="min-w-40 text-sm">
-                    Meter Status
+                    Meter Status Events
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
                   <TableHead className="min-w-40 text-sm">
@@ -381,7 +381,7 @@ const Page = () => {
                     <TableHead className="min-w-40 text-sm">Select</TableHead>
                     <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
                     <TableHead className="min-w-40 text-sm">
-                      Meter Status
+                      Meter Status Events
                     </TableHead>
                     <TableHead className="min-w-40 text-sm">
                       Household ID
@@ -515,7 +515,7 @@ const Page = () => {
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="min-w-40 text-sm">
-                    Meter Status
+                    Meter Status Events
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
 
