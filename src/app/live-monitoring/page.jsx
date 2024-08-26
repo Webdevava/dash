@@ -51,7 +51,7 @@ const MapComponent = () => {
     if (Object.keys(queryParams).length > 0) {
       try {
         const response = await axios.get(
-          "http://localhost:5000/search/latest",
+          "https://api.inditronics.com/search/latest",
           {
             params: queryParams,
           }

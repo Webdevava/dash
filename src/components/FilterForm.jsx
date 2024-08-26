@@ -28,7 +28,7 @@ const FilterForm = ({ onSearch }) => {
 
   const fetchSearchResults = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/search/latest", {
+      const response = await axios.get("https://api.inditronics.com/search/latest", {
         params: filters,
       });
       setSearchResults(response.data); // Save results to Zustand store

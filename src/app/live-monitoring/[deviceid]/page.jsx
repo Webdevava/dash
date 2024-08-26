@@ -23,7 +23,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/search/live?deviceId=${deviceid}`
+          `https://api.inditronics.com/search/live?deviceId=${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");

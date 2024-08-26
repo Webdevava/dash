@@ -16,7 +16,7 @@ const ConfigFilterForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = "http://localhost:5000/search/config"
+      const endpoint = "https://api.inditronics.com/search/config"
 // All devices
 
       const response = await axios.get(endpoint);

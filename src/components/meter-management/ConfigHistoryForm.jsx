@@ -30,7 +30,7 @@ const ConfigHistoryForm = ({ onSearch }) => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/devices/search",
+        "https://api.inditronics.com/api/devices/search",
         {
           params: filters,
         }

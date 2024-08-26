@@ -75,7 +75,7 @@ const Page = () => {
     try {
       // Replace with your API call to fetch data
       const response = await fetch(
-        "http://localhost:5000/search/latest?deviceIdMin=100001&deviceIdMax=300010"
+        "https://api.inditronics.com/search/latest?deviceIdMin=100001&deviceIdMax=300010"
       );
       const newData = await response.json();
       setData(newData);
@@ -87,7 +87,7 @@ const Page = () => {
   const fetchData = async (deviceIdMin, deviceIdMax) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/search/latest?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+        `https://api.inditronics.com/search/latest?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
       );
       setData(response.data);
     } catch (error) {

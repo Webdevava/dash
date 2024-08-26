@@ -27,7 +27,7 @@ const Login = () => {
     setError(""); // Reset error before making request
 
     try {
-      const response = await fetch("http://localhost:5000/auth/login", {
+      const response = await fetch("https://api.inditronics.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
 
         // Fetch user details after login
-        const userDetailsResponse = await fetch("http://localhost:5000/user/me", {
+        const userDetailsResponse = await fetch("https://api.inditronics.com/user/me", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${data.token}`, // Send token in authorization header
@@ -221,7 +221,7 @@ export default Login;
 //     // Optionally handle login and user details fetching
 //     /*
 //     try {
-//       const response = await fetch("http://localhost:5000/auth/login", {
+//       const response = await fetch("https://api.inditronics.com/auth/login", {
 //         method: "POST",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -235,7 +235,7 @@ export default Login;
 //         localStorage.setItem("token", data.token);
 
 //         // Fetch user details after login
-//         const userDetailsResponse = await fetch("http://localhost:5000/user/me", {
+//         const userDetailsResponse = await fetch("https://api.inditronics.com/user/me", {
 //           method: "GET",
 //           headers: {
 //             Authorization: `Bearer ${data.token}`, // Send token in authorization header

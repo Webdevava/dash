@@ -29,7 +29,7 @@ const MeterEventsForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get("http://localhost:5000/search/all", {
+      const response = await axios.get("https://api.inditronics.com/search/all", {
         params: filters,
       });
       setSearchResults(response.data); // Save results to Zustand store

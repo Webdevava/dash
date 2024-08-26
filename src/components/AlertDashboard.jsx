@@ -102,9 +102,9 @@ const AlarmDashboard = () => {
   useEffect(() => {
     const fetchAlarms = async () => {
       try {
-        let url = "http://localhost:5000/search/alerts";
+        let url = "https://api.inditronics.com/search/alerts";
         if (filter !== "all") {
-          url = `http://localhost:5000/search/alerts?AlertType=${filter}`;
+          url = `https://api.inditronics.com/search/alerts?AlertType=${filter}`;
         }
         const response = await axios.get(url);
         const fetchedAlarms = response.data.map(mapAlarmData);
