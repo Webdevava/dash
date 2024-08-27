@@ -16,7 +16,7 @@ const Login = () => {
   const [role, setRole] = useState("Admin");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [username, setUsernameOrEmail] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -32,7 +32,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ usernameOrEmail, password }),
       });
 
       const data = await response.json();
@@ -125,11 +125,11 @@ const Login = () => {
           <div className="mb-5 relative text-sm">
             <AiOutlineMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
             <input
-              name="username"
+              name="usernameOrEmail"
               type="text"
-              value={username}
+              value={usernameOrEmail}
               onChange={(e) => setUsernameOrEmail(e.target.value)}
-              placeholder="Username or Email"
+              placeholder="usernameOrEmail or Email"
               className="w-full text-xs font-light p-2 py-3 pl-10 bg-accent/30 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -205,7 +205,7 @@ export default Login;
 //   const [role, setRole] = useState("Admin");
 //   const [passwordVisible, setPasswordVisible] = useState(false);
 //   const [dropdownVisible, setDropdownVisible] = useState(false);
-//   const [username, setUsernameOrEmail] = useState("");
+//   const [usernameOrEmail, setUsernameOrEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [error, setError] = useState("");
 //   const router = useRouter();
@@ -226,7 +226,7 @@ export default Login;
 //         headers: {
 //           "Content-Type": "application/json",
 //         },
-//         body: JSON.stringify({ username, password }),
+//         body: JSON.stringify({ usernameOrEmail, password }),
 //       });
 
 //       const data = await response.json();
@@ -320,11 +320,11 @@ export default Login;
 //           <div className="mb-5 relative text-sm">
 //             <AiOutlineMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
 //             <input
-//               name="username"
+//               name="usernameOrEmail"
 //               type="text"
-//               value={username}
+//               value={usernameOrEmail}
 //               onChange={(e) => setUsernameOrEmail(e.target.value)}
-//               placeholder="Username or Email"
+//               placeholder="usernameOrEmail or Email"
 //               className="w-full text-xs font-light p-2 py-3 pl-10 bg-accent/30 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 //               required
 //             />
