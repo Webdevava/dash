@@ -43,7 +43,7 @@ import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [data, setData] = useState([]);
-  const [activeTab, setActiveTab] = useState("Inventory");
+  const [activeTab, setActiveTab] = useState("Stock Tracker");
   const [activeSubTab, setActiveSubTab] = useState("Records");
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
@@ -119,14 +119,8 @@ const Page = () => {
   const setActiveTabWithDefaultSubTab = (tab) => {
     setActiveTab(tab);
     switch (tab) {
-      case "Meter Events":
+      case "Stock Tracker":
         setActiveSubTab("Records");
-        break;
-      case "Config & Update":
-        setActiveSubTab("View&Update");
-        break;
-      case "Meter Release Management":
-        setActiveSubTab("Search");
         break;
       default:
         setActiveSubTab("");
@@ -135,9 +129,9 @@ const Page = () => {
 
   const renderInventoryContent = () => {
     switch (activeTab) {
-      case "Inventory":
+      case "Stock Tracker":
       case "Master Data":
-      case "Meter Info Conflicts":
+      case "Conflicts Harmonizer":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-screen">
             <Table className="min-w-full">
@@ -337,9 +331,9 @@ const Page = () => {
 
   const renderMeterReleaseManagementContent = () => {
     switch (activeTab) {
-      case "Test History":
+      case "Test Archive":
       case "Config & Update":
-      case "Field Status History":
+      case "Field Activity Ledger":
       case "HH info History":
       case "HH field status":
         return (
@@ -452,15 +446,15 @@ const Page = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Inventory":
+      case "Stock Tracker":
         return renderInventoryContent();
       case "Master Data":
         return renderInventoryContent();
-      case "Field Status History":
+      case "Field Activity Ledger":
         return renderMeterReleaseManagementContent();
-      case "Test History":
+      case "Test Archive":
         return renderMeterReleaseManagementContent();
-      case "Meter Info Conflicts":
+      case "Conflicts Harmonizer":
         return renderInventoryContent();
       case "File Upload Assets":
         return renderFileUploadAssetsContent();
@@ -479,11 +473,11 @@ const Page = () => {
         <nav className="w-full border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 mt-4 text-md">
           <ul className="flex items-center justify-between">
             {[
-              "Inventory",
+              "Stock Tracker",
               "Master Data",
-              "Field Status History",
-              "Test History",
-              "Meter Info Conflicts",
+              "Field Activity Ledger",
+              "Test Archive",
+              "Conflicts Harmoinizer",
               "File Upload Assets",
               "HH info History",
               "HH field status",
@@ -505,7 +499,7 @@ const Page = () => {
           <div
             className={`mt-5 rounded-xl bg-white p-4 shadow-md w-[96%] transition-all duration-300 ease-in-out z-[9] ${"h-3/4"}`}
           >
-            {activeTab === "Inventory" && (
+            {activeTab === "Stock Tracker" && (
               <div className="mb-4">
                 <nav className="w-full border-b border-gray-300 font-medium text-sm">
                   <ul className="flex items-center justify-start">

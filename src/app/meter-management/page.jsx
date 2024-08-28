@@ -43,7 +43,7 @@ import MeterEventsForm from "@/components/meter-management/MeterEventsForm";
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [data, setData] = useState([]);
-  const [activeTab, setActiveTab] = useState("Meter Events");
+  const [activeTab, setActiveTab] = useState("Events Stream");
   const [activeSubTab, setActiveSubTab] = useState("Records");
   // const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
@@ -177,7 +177,7 @@ const Page = () => {
   const setActiveTabWithDefaultSubTab = (tab) => {
     setActiveTab(tab);
     switch (tab) {
-      case "Meter Events":
+      case "Events Stream":
         setActiveSubTab("Records");
         break;
       case "Config & Update":
@@ -193,7 +193,7 @@ const Page = () => {
 
   const renderMeterEventsContent = () => {
     switch (activeTab) {
-      case "Meter Events":
+      case "Events Stream":
       case "Meter Release Management":
         return (
           <div className="overflow-auto bg-white rounded-xl border h-1/2">
@@ -617,18 +617,18 @@ const Page = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Meter Events":
+      case "Events Stream":
         return renderMeterEventsContent();
       case "Config & Update":
         return renderConfigUpdatesContent();
       case "Meter Release Management":
         return renderMeterReleaseManagementContent();
-      case "Alarms":
-        return <div>Alarms Content Here</div>;
-      case "Meter Summary":
-        return <div>Meter Summary Content Here</div>;
-      case "Installation History":
-        return <div>Installation History Content Here</div>;
+      case "Smart Alert System":
+        return <div>Smart Alert System Content Here</div>;
+      case "Meter Insignt Panel":
+        return <div>Meter Insignt Panel Content Here</div>;
+      case "Installation Archive":
+        return <div>Installation Archive Content Here</div>;
       default:
         return null;
     }
@@ -640,12 +640,12 @@ const Page = () => {
         <nav className="w-full border border-gray-300 rounded-3xl p-1 font-medium bg-gray-200 mt-4 text-md">
           <ul className="flex items-center justify-between">
             {[
-              "Meter Events",
-              "Alarms",
+              "Events Stream",
+              "Smart Alert System",
               "Config & Update",
               "Meter Release Management",
-              "Meter Summary",
-              "Installation History",
+              "Meter Insignt Panel",
+              "Installation Archive",
             ].map((tab) => (
               <li
                 key={tab}
@@ -664,7 +664,7 @@ const Page = () => {
           <div
             className={`mt-5 rounded-xl bg-white p-4 shadow-md w-[96%] transition-all duration-300 ease-in-out z-[9] ${"h-3/4"}`}
           >
-            {activeTab === "Meter Events" && (
+            {activeTab === "Events Stream" && (
               <div className="mb-4">
                 <nav className="w-full border-b border-gray-300 font-medium text-sm">
                   <ul className="flex items-center justify-start">
@@ -765,7 +765,7 @@ const Page = () => {
                 ) : activeSubTab === "History" ? (
                   <ConfigHistoryForm onSearch={handleSearch} />
                 ) : null
-              ) : activeTab === "Meter Events" ? (
+              ) : activeTab === "Events Stream" ? (
                 <MeterEventsForm onSearch={handleSearch} />
               ) : (
                 <FilterForm onSearch={handleSearch} />

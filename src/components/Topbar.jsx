@@ -106,7 +106,7 @@ const Topbar = () => {
               />
               <div className="hidden sm:block">
                 <p className="text-sm font-semibold w-full text-start">
-                  Hi, {user?.username || "John Doe"}
+                  Hi, {user?.name || "John Doe"}
                 </p>
                 <p className="text-xs">Welcome to Inditronics</p>
               </div>

@@ -48,10 +48,10 @@ const menuItems = [
     name: "Assets Management",
     path: "/assets-management",
   },
-  { icon: Radio, name: "Live Monitoring", path: "/live-monitoring" },
-  { icon: Gauge, name: "Meter Management", path: "/meter-management" },
+  { icon: Radio, name: "Live Data Stream", path: "/live-monitoring" },
+  { icon: Gauge, name: "Meter Control Suite", path: "/meter-management" },
   // { icon: FileCog, name: "List Management", path: "#" },
-  { icon: Users, name: "User Management", path: "/user-management" },
+  { icon: Users, name: "Access Manager", path: "/user-management" },
 ];
 
 const Sidebar = ({ isMobile, isOpen, onClose }) => {
