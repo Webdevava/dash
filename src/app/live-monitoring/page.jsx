@@ -146,17 +146,13 @@ const MapComponent = () => {
                     <TableHead className="min-w-40 text-sm">
                       Hardware Version
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Alarm Type
-                    </TableHead>
+
                     <TableHead className="min-w-40 text-sm">Network</TableHead>
                     <TableHead className="min-w-40 text-sm">Location</TableHead>
                     <TableHead className="min-w-40 text-sm">
                       Lat & Lon
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">
-                      Time&Date
-                    </TableHead>
+                    
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -236,17 +232,17 @@ const MapComponent = () => {
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.householdId || "N/A"}
+                        {item.hhid || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.householdStatus === "active"
+                            true 
                               ? "bg-green-500"
                               : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.householdStatus === "active"
+                          {true 
                             ? "Active"
                             : "Inactive"}
                         </span>
@@ -255,23 +251,15 @@ const MapComponent = () => {
                         {item.hardwareVersion || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.alertType || "N/A"}
+                        {item.network || "Airtel"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.network || "N/A"}
+                        {item.region || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.location || "N/A"}
+                        Lat: {item.lat || "N/A"}, Lon: {item.lon || "N/A"}
                       </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        Lat: {item.latitude || "N/A"}, Lon:{" "}
-                        {item.longitude || "N/A"}
-                      </TableCell>
-                      <TableCell className="p-2 text-sm">
-                        {item.timestamp
-                          ? new Date(item.timestamp * 1000).toLocaleString()
-                          : "N/A"}
-                      </TableCell>
+                    
                     </TableRow>
                   ))}
                 </TableBody>
