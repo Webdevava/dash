@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const MeterEventsForm = ({ onSearch }) => {
   const [filters, setFilters] = useState({
@@ -29,7 +30,7 @@ const MeterEventsForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get("https://api.inditronics.com/search/all", {
+      const response = await axios.get(`${API_URL}/search/all`, {
         params: filters,
       });
       setSearchResults(response.data); // Save results to Zustand store

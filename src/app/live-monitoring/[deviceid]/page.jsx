@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import LiveMonitoringChart from "@/components/LiveMonitoringChart";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const Page = () => {
   const { deviceid } = useParams();
   const router = useRouter();
@@ -23,7 +25,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://api.inditronics.com/search/live?deviceId=${deviceid}`
+          `${API_URL}/search/live?deviceId=${deviceid}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -54,11 +56,12 @@ const Page = () => {
     return <p className="text-center text-lg text-red-500">Error: {error}</p>;
 
   const logoResults = data.logoResults || [];
-  const sortedData = logoResults
+  const audioResults = data.afpResults || [];
+  const sortedLogoData = logoResults
     .filter((item) => item.accuracy)
     .sort((a, b) => b.ts - a.ts);
 
-  const chartData = sortedData.map((item) => ({
+  const chartData = sortedLogoData.map((item) => ({
     date: item.ts ? new Date(item.ts * 1000).toLocaleString() : "N/A",
     logoConfidence: item.accuracy * 100,
     audioConfidence: 100,
@@ -78,59 +81,105 @@ const Page = () => {
           </button>
         </div>
 
-        {logoResults.length > 0 ? (
-          <div className="overflow-auto bg-white rounded-xl border shadow-md max-h-[25vh] mb-10">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow className="bg-gray-100">
-                  <TableHead className="min-w-40 text-sm">Device ID</TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Channel Name
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">Accuracy</TableHead>
-                  <TableHead className="min-w-40 text-sm">Timestamp</TableHead>
-                  <TableHead className="min-w-40 text-sm">Priority</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedData.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="p-2 text-sm font-extrabold">
-                      {data.DEVICE_ID}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm font-extrabold">
-                      <div className="bg-gray-300 p-1 rounded-3xl flex items-center gap-2">
-                        <img
-                          src={
-                            data.images[0][0] ||
-                            "https://via.placeholder.com/150"
-                          } // Fallback image
-                          alt="logo"
-                          className="h-10 w-10 rounded-3xl"
-                        />
-                        <p>{data.accuracyResults[0].Channel_ID}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {Math.round(item.accuracy * 100) || "N/A"}%
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {new Date(item.ts * 1000).toLocaleString()}
-                    </TableCell>
-
-                    <TableCell className="p-2 text-sm">
-                      {data.accuracyResults[0]?.Priority || "None"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        <div className="flex w-full gap-6">
+          {logoResults.length > 0 && (
+          <div className="w-full">
+            <h2 className="text-lg font-bold mb-2">Logo Results</h2>
+            
+              <div className="overflow-auto bg-white rounded-xl border  w-full shadow-md max-h-[25vh] mb-10">
+                <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow className="bg-gray-100">
+                      <TableHead className="min-w-40 text-sm">
+                        Device ID
+                      </TableHead>
+                      <TableHead className="min-w-40 text-sm">Logo</TableHead>
+                      <TableHead className="min-w-40 text-sm">
+                        Timestamp
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedLogoData.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="p-2 text-sm font-extrabold">
+                          {item.device_id || "N/A"}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <div className="bg-gray-300 p-1 rounded-3xl flex items-center gap-2">
+                            <img
+                              src={
+                                item.images?.[0]?.images?.[0] ||
+                                "https://via.placeholder.com/150"
+                              }
+                              alt="logo"
+                              className="h-10 w-10 rounded-3xl"
+                            />
+                            <p>{item.Channel_ID || "N/A"}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.ts
+                            ? new Date(item.ts * 1000).toLocaleString()
+                            : "N/A"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
           </div>
-        ) : (
-          <p className="text-center text-lg">
-            No logo results available for the selected meter ID.
-          </p>
-        )}
+            )}
+
+            {audioResults.length > 0 && (
+          <div className="w-full">
+            <h2 className="text-lg font-bold mb-2">Audio Results</h2>
+              <div className="overflow-auto bg-white rounded-xl border w-full shadow-md max-h-[25vh] mb-10">
+                <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow className="bg-gray-100">
+                      <TableHead className="min-w-40 text-sm">
+                        Device ID
+                      </TableHead>
+                      <TableHead className="min-w-40 text-sm">Audio</TableHead>
+                      <TableHead className="min-w-40 text-sm">
+                        Timestamp
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {audioResults.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="p-2 text-sm font-extrabold">
+                          {item.device_id || "N/A"}
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          <div className="bg-gray-300 p-1 rounded-3xl flex items-center gap-2">
+                            <img
+                              src={
+                                item.images?.[0]?.images?.[0] ||
+                                "https://via.placeholder.com/150"
+                              }
+                              alt="audio"
+                              className="h-10 w-10 rounded-3xl"
+                            />
+                            <p>{item.Channel_ID || "N/A"}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="p-2 text-sm">
+                          {item.time
+                            ? new Date(item.time * 1000).toLocaleString()
+                            : "N/A"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+          </div>
+            )}
+        </div>
+
         <div>
           <LiveMonitoringChart data={chartData} />
         </div>

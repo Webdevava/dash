@@ -9,7 +9,6 @@ import {
 import {
   ComposedChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -19,6 +18,7 @@ import {
 
 const LiveMonitoringChart = ({ data }) => {
   const [timePeriod, setTimePeriod] = useState("Day");
+  const [filter, setFilter] = useState("all"); // State to manage filter selection
 
   // Ensure data is sorted in ascending order by date
   const sortedData = [...data].sort(
@@ -66,21 +66,36 @@ const LiveMonitoringChart = ({ data }) => {
     >
       <div className="flex items-center justify-between gap-3 ">
         <div className="flex gap-3 items-center font-bold">
-          <div className="bg-[#32ADE644] p-2 rounded-3xl w-fit flex items-center">
+          <button
+            onClick={() => setFilter("audio")}
+            className={`bg-[#32ADE644] p-2 rounded-3xl w-fit flex items-center ${
+              filter === "audio" ? "ring-2 ring-primary" : ""
+            }`}
+          >
             <span className="bg-[#32ADE6] h-3 w-3 rounded-full"></span>
             <p className="ml-2 mr-4">Audio</p>
             <ChartNoAxesColumn color="#32ADE6" />
-          </div>
-          <div className="bg-[#AF52DE44] p-2 rounded-3xl w-fit flex items-center">
+          </button>
+          <button
+            onClick={() => setFilter("logo")}
+            className={`bg-[#AF52DE44] p-2 rounded-3xl w-fit flex items-center ${
+              filter === "logo" ? "ring-2 ring-primary" : ""
+            }`}
+          >
             <span className="bg-[#AF52DE] h-3 w-3 rounded-full"></span>
             <p className="ml-2 mr-4">Logo</p>
             <ChartNoAxesColumn color="#AF52DE" />
-          </div>
-          <div className="bg-[#34C75944] p-2 rounded-3xl w-fit flex items-center">
+          </button>
+          <button
+            onClick={() => setFilter("all")}
+            className={`bg-[#34C75944] p-2 rounded-3xl w-fit flex items-center ${
+              filter === "all" ? "ring-2 ring-primary" : ""
+            }`}
+          >
             <span className="bg-[#34C759] h-3 w-3 rounded-full"></span>
-            <p className="ml-2 mr-4">Accuracy</p>
+            <p className="ml-2 mr-4">All</p>
             <ChartSpline color="#34C759" />
-          </div>
+          </button>
         </div>
         <div className="flex items-center justify-between gap-3">
           <div className="flex gap-6 font-bold text-[#2054DD] bg-[#CFDCFF] w-fit p-2 rounded-3xl">
@@ -130,28 +145,24 @@ const LiveMonitoringChart = ({ data }) => {
           />
           <YAxis domain={[0, 100]} />
           <Tooltip />
-          <Bar
-            dataKey="audioConfidence"
-            barSize={10}
-            fill="#32ADE6"
-            name="Audio Confidence"
-            radius={[10, 10, 0, 0]}
-          />
-          <Bar
-            dataKey="logoConfidence"
-            barSize={10}
-            fill="#AF52DE"
-            name="Logo Confidence"
-            radius={[10, 10, 0, 0]}
-          />
-          <Line
-            type="monotone"
-            dataKey="averageConfidence"
-            stroke="#34C759"
-            strokeWidth={4}
-            dot={true}
-            name="Average Confidence"
-          />
+          {filter === "all" || filter === "audio" ? (
+            <Bar
+              dataKey="audioConfidence"
+              barSize={10}
+              fill="#32ADE6"
+              name="Audio Confidence"
+              radius={[10, 10, 0, 0]}
+            />
+          ) : null}
+          {filter === "all" || filter === "logo" ? (
+            <Bar
+              dataKey="logoConfidence"
+              barSize={10}
+              fill="#AF52DE"
+              name="Logo Confidence"
+              radius={[10, 10, 0, 0]}
+            />
+          ) : null}
         </ComposedChart>
       </ResponsiveContainer>
     </div>

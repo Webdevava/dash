@@ -27,10 +27,10 @@ const MeterLocationMap = () => {
 
   const fetchLocations = async () => {
     try {
-      let endpoint = "https://api.inditronics.com/location/locations";
+      let endpoint = `${API_URL}/location/locations`;
       if (selectedMeter !== "all") {
         const hardwareVersion = selectedMeter;
-        endpoint = `https://api.inditronics.com/location/locations/hardware_version/${hardwareVersion}`;
+        endpoint = `${API_URL}/location/locations/hardware_version/${hardwareVersion}`;
       }
       const response = await axios.get(endpoint);
       const formattedLocations = response.data.map((location) => ({

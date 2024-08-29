@@ -1,8 +1,8 @@
-// src/components/MapComponent.js
 "use client";
 import { useState } from "react";
 import Link from "next/link";
 import Layout from "@/components/Layout";
+import axios from "axios";
 import {
   Table,
   TableBody,
@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import ConfigFilterForm from "@/components/meter-management/ConfigFilterForm";
 import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -47,6 +48,7 @@ const Page = () => {
   const [activeSubTab, setActiveSubTab] = useState("Records");
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
   const [showPopover, setShowPopover] = useState(false);
   const [files, setFiles] = useState([]);
@@ -73,21 +75,19 @@ const Page = () => {
 
   const refreshTable = async () => {
     try {
-      // Replace with your API call to fetch data
-      const response = await fetch(
-        "https://api.inditronics.com/search/latest?deviceIdMin=100001&deviceIdMax=300010"
+      const response = await axios.get(
+        `${API_URL}/search/latest`
       );
-      const newData = await response.json();
-      setData(newData);
+      setData(response.data);
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
   };
 
-  const fetchData = async (deviceIdMin, deviceIdMax) => {
+  const handleInputSearch = async () => {
     try {
       const response = await axios.get(
-        `https://api.inditronics.com/search/latest?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+        `${API_URL}/search/latest?deviceId=${searchInput}`
       );
       setData(response.data);
     } catch (error) {
@@ -141,7 +141,7 @@ const Page = () => {
                     Meter Status
                   </TableHead>
                   <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  
+
                   <TableHead className="min-w-40 text-sm">
                     Connectivity Status
                   </TableHead>
@@ -182,7 +182,7 @@ const Page = () => {
                         <ChevronRight size={18} color="#2054DD" />
                       </Link>
                     </TableCell>
-                    
+
                     <TableCell className="p-2 text-sm">
                       <span
                         className={`px-2 py-1 rounded-full ${
@@ -219,9 +219,7 @@ const Page = () => {
                         ? "Airtel"
                         : "Unknown"}
                     </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.region}
-                    </TableCell>
+                    <TableCell className="p-2 text-sm">{item.region}</TableCell>
                     <TableCell className="p-2 text-sm">
                       {item.lat} / {item.lon}
                     </TableCell>
@@ -329,121 +327,6 @@ const Page = () => {
     }
   };
 
-  const renderMeterReleaseManagementContent = () => {
-    switch (activeTab) {
-      case "Test Archive":
-      case "Config & Update":
-      case "Field Activity Ledger":
-      case "HH info History":
-      case "HH field status":
-        return (
-          <div className="overflow-auto bg-white rounded-xl border h-1/2">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow className="bg-gray-100">
-                  <TableHead className="min-w-40 text-sm">
-                    Meter Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">Meter ID</TableHead>
-                  
-                  <TableHead className="min-w-40 text-sm">
-                    Connectivity Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Household ID
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Household Status
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">
-                    Hardware Version
-                  </TableHead>
-                  <TableHead className="min-w-40 text-sm">Alarm Type</TableHead>
-                  <TableHead className="min-w-40 text-sm">Network</TableHead>
-                  <TableHead className="min-w-40 text-sm">Location</TableHead>
-                  <TableHead className="min-w-40 text-sm">Lat & Lon</TableHead>
-                  <TableHead className="min-w-40 text-sm">Radius</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.meterSuccess ? "bg-green-500" : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.meterSuccess ? "Online" : "Offline"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm font-extrabold">
-                      <Link
-                        href={`/live-monitoring/${item.DEVICE_ID}`}
-                        className="bg-accent min-w-48 rounded-3xl p-1 items-center px-3 pr-5 flex justify-between"
-                      >
-                        {item.DEVICE_ID}
-                        <ChevronRight size={18} color="#2054DD" />
-                      </Link>
-                    </TableCell>
-                   
-                    <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.connectivity_status
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.connectivity_status
-                          ? "Connected"
-                          : "Disconnected"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
-                    <TableCell className="p-2 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full ${
-                          item.installing ? "bg-green-500" : "bg-gray-500"
-                        } text-white`}
-                      >
-                        {item.installing ? "Installed" : "Uninstalled"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.hardware_version}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.tamperAlarmAlertType || "Pending"}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.sim === 1
-                        ? "Jio"
-                        : item.sim === 2
-                        ? "Airtel"
-                        : "Unknown"}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.region}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.lat} / {item.lon}
-                    </TableCell>
-                    <TableCell className="p-2 text-sm">
-                      {item.radius || "3km"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-  
-
   const renderContent = () => {
     switch (activeTab) {
       case "Stock Tracker":
@@ -451,17 +334,17 @@ const Page = () => {
       case "Master Data":
         return renderInventoryContent();
       case "Field Activity Ledger":
-        return renderMeterReleaseManagementContent();
+        return "renderMeterReleaseManagementContent()";
       case "Test Archive":
-        return renderMeterReleaseManagementContent();
+        return "renderMeterReleaseManagementContent()";
       case "Conflicts Harmonizer":
-        return renderInventoryContent();
+        return "renderInventoryContent()";
       case "File Upload Assets":
         return renderFileUploadAssetsContent();
       case "HH info History":
-        return renderMeterReleaseManagementContent();
+        return "renderMeterReleaseManagementContent()";
       case "HH field status":
-        return renderMeterReleaseManagementContent();
+        return "renderMeterReleaseManagementContent()";
       default:
         return null;
     }
@@ -477,7 +360,7 @@ const Page = () => {
               "Master Data",
               "Field Activity Ledger",
               "Test Archive",
-              "Conflicts Harmoinizer",
+              "Conflicts Harmonizer",
               "File Upload Assets",
               "HH info History",
               "HH field status",
@@ -506,7 +389,7 @@ const Page = () => {
                     {["Records", "Plot", "Retrieval Request"].map((subTab) => (
                       <li
                         key={subTab}
-                        className={` px-4 py-1 cursor-pointer ${
+                        className={`px-4 py-1 cursor-pointer ${
                           activeSubTab === subTab ? "border-b font-bold " : ""
                         }`}
                         onClick={() => setActiveSubTab(subTab)}
@@ -514,48 +397,6 @@ const Page = () => {
                         {subTab}
                       </li>
                     ))}
-                  </ul>
-                </nav>
-              </div>
-            )}
-
-            {/* {activeTab === "File Upload Assets" && (
-              <div className="">
-                <nav className="w-full border-b border-gray-300 font-medium text-sm">
-                  <ul className="flex items-center justify-start">
-                    {["View&Update", "History"].map((subTab) => (
-                      <li
-                        key={subTab}
-                        className={` px-4 py-1 cursor-pointer ${
-                          activeSubTab === subTab ? "border-b font-bold " : ""
-                        }`}
-                        onClick={() => setActiveSubTab(subTab)}
-                      >
-                        {subTab}
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
-            )} */}
-
-            {activeTab === "Meter Release Management" && (
-              <div className="mb-4">
-                <nav className="w-full border-b border-gray-300 font-medium text-sm">
-                  <ul className="flex items-center justify-start">
-                    {["Search", "History", "Submit Job", "View Job"].map(
-                      (subTab) => (
-                        <li
-                          key={subTab}
-                          className={` px-4 py-1 cursor-pointer ${
-                            activeSubTab === subTab ? "border-b font-bold " : ""
-                          }`}
-                          onClick={() => setActiveSubTab(subTab)}
-                        >
-                          {subTab}
-                        </li>
-                      )
-                    )}
                   </ul>
                 </nav>
               </div>
@@ -568,10 +409,11 @@ const Page = () => {
                     type="text"
                     placeholder="Search Meter by Serial Range"
                     className="px-4 py-2 text-sm w-72 rounded-l-3xl bg-accent/50"
-                    onClick={() => setShowPopover(!showPopover)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                   />
                   <button
-                    onClick={fetchData}
+                    onClick={handleInputSearch}
                     className="px-4 flex gap-2 text-sm text-white py-3 border rounded-3xl bg-[#2054DD]"
                   >
                     <Search /> search

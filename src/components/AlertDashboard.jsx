@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const AlarmCard = ({
   icon: Icon,
@@ -102,9 +103,9 @@ const AlarmDashboard = () => {
   useEffect(() => {
     const fetchAlarms = async () => {
       try {
-        let url = "https://api.inditronics.com/search/alerts";
+        let url = `${API_URL}/search/alerts`;
         if (filter !== "all") {
-          url = `https://api.inditronics.com/search/alerts?AlertType=${filter}`;
+          url = `${API_URL}/search/alerts?AlertType=${filter}`;
         }
         const response = await axios.get(url);
         const fetchedAlarms = response.data.map(mapAlarmData);

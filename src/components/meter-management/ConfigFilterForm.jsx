@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const ConfigFilterForm = ({ onSearch }) => {
   const [deviceId, setDeviceId] = useState(""); // State for device ID
@@ -16,7 +17,7 @@ const ConfigFilterForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = "https://api.inditronics.com/search/config"
+      const endpoint = `${API_URL}/search/config`;
 // All devices
 
       const response = await axios.get(endpoint);

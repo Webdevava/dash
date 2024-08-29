@@ -29,12 +29,9 @@ const ConfigHistoryForm = ({ onSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(
-        "https://api.inditronics.com/api/devices/search",
-        {
-          params: filters,
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/devices/search`, {
+        params: filters,
+      });
       setSearchResults(response.data); // Save results to Zustand store
       if (onSearch) onSearch(response.data); // Optional: Call onSearch if provided
     } catch (error) {

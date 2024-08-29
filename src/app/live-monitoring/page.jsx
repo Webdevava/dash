@@ -25,17 +25,17 @@ import {
 
 import Layout from "@/components/Layout";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import AAJ from "../../../public/AAJ.png";
-import NBC from "../../../public/NBC.png";
-import Image from "next/image";
 import AccuracyCard from "@/components/AccuracyCard";
 import FilterForm from "@/components/FilterForm";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const MapComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [data, setData] = useState([]);
-  const [queryParams, setQueryParams] = useState({}); // Store query parameters
+  const [queryParams, setQueryParams] = useState({});
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -47,25 +47,36 @@ const MapComponent = () => {
     setShowFilters(false); // Close the filter dropdown after search
   };
 
-  const handleRefresh = async () => {
-    if (Object.keys(queryParams).length > 0) {
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value); // Update search query
+  };
+
+  const handleSearchClick = async () => {
+    if (searchQuery.trim()) {
       try {
-        const response = await axios.get(
-          "https://api.inditronics.com/search/latest",
-          {
-            params: queryParams,
-          }
-        );
+        const response = await axios.get(`${API_URL}/search/latest`, {
+          params: { deviceId: searchQuery }, // Add deviceId to query params
+        });
         setData(response.data);
+        setQueryParams({ deviceId: searchQuery }); // Update query parameters
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
   };
 
-  useEffect(() => {
-    // Optionally, you can fetch initial data or handle any other side effects here
-  }, []);
+  const handleRefresh = async () => {
+    if (Object.keys(queryParams).length > 0) {
+      try {
+        const response = await axios.get(`${API_URL}/search/latest`, {
+          params: queryParams,
+        });
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
 
   return (
     <Layout>
@@ -82,9 +93,14 @@ const MapComponent = () => {
                 <input
                   type="text"
                   placeholder="Search Meter by Serial Range"
+                  value={searchQuery} // Set the value to searchQuery state
+                  onChange={handleInputChange} // Update searchQuery state on change
                   className="px-4 py-2 text-sm w-72 rounded-l-3xl bg-accent/50"
                 />
-                <button className="px-4 flex gap-2 text-sm text-white py-3 border rounded-3xl bg-[#2054DD]">
+                <button
+                  onClick={handleSearchClick} // Trigger search on click
+                  className="px-4 flex gap-2 text-sm text-white py-3 border rounded-3xl bg-[#2054DD]"
+                >
                   <Search /> search
                 </button>
               </div>
@@ -138,7 +154,9 @@ const MapComponent = () => {
                     <TableHead className="min-w-40 text-sm">
                       Lat & Lon
                     </TableHead>
-                    <TableHead className="min-w-40 text-sm">Time&Date</TableHead>
+                    <TableHead className="min-w-40 text-sm">
+                      Time&Date
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -169,36 +187,40 @@ const MapComponent = () => {
                               <img
                                 height={10}
                                 width={10}
-                                alt={item.accuracyResult?.channelId || "logo"}
+                                alt={item.logoResult?.channelId || "logo"}
                                 src={
-                                  item.images?.[0] ||
-                                  "/path/to/fallback-image.png"
-                                } // Add a fallback image here
+                                  item.logoResult?.images?.[0]?.images?.[0] ||
+                                  "https://indi-logo-bucket.s3.ap-south-1.amazonaws.com/images/fallback.jpg"
+                                }
                                 className="size-10 rounded-full"
                               />
-                             
-                                <span className="">
-                                  {item.accuracyResult.channelId}
-                                </span>
-                             
+
+                              <span className="">
+                                {item.logoResult.channelName || "N/A"}
+                              </span>
                             </div>
                           </DialogTrigger>
                           <DialogContent className="bg-white p-0">
                             <AccuracyCard
-                              logoSrc={item.images[0]}
+                              logoSrc={
+                                item.logoResult?.images?.[0]?.images?.[0] ||
+                                "https://indi-logo-bucket.s3.ap-south-1.amazonaws.com/images/fallback.jpg"
+                              }
                               ts={new Date(
                                 item.logoResult.ts * 1000
                               ).toLocaleString()}
                               deviceId={item.DEVICE_ID}
-                              name={item.accuracyResult.channelId}
-                              id={item.accuracyResult.channelId}
-                              accuracy={Math.round(
-                                (item.logoResult.accuracy * 100 + 100) / 2
-                              )}
+                              name={item.logoResult.channelId || "N/A"}
+                              id={item.logoResult.channelId || "N/A"}
+                              accuracy={
+                                Math.round(
+                                  (item.logoResult.accuracy * 100 + 100) / 2
+                                ) || 0
+                              }
                               audioMatching={Math.round(100)}
-                              logoDetection={Math.round(
-                                item.logoResult.accuracy * 100
-                              )}
+                              logoDetection={
+                                Math.round(item.logoResult.accuracy * 100) || 0
+                              }
                             />
                           </DialogContent>
                         </Dialog>
@@ -213,39 +235,42 @@ const MapComponent = () => {
                           {true ? "Connected" : "Disconnected"}
                         </span>
                       </TableCell>
-                      <TableCell className="p-2 text-sm">{item.hhid}</TableCell>
+                      <TableCell className="p-2 text-sm">
+                        {item.householdId || "N/A"}
+                      </TableCell>
                       <TableCell className="p-2 text-sm">
                         <span
                           className={`px-2 py-1 rounded-full ${
-                            item.installing ? "bg-green-500" : "bg-gray-500"
+                            item.householdStatus === "active"
+                              ? "bg-green-500"
+                              : "bg-gray-500"
                           } text-white`}
                         >
-                          {item.installing ? "Installed" : "Uninstalled"}
+                          {item.householdStatus === "active"
+                            ? "Active"
+                            : "Inactive"}
                         </span>
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.hardwareVersion}
+                        {item.hardwareVersion || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.tamperAlarmAlertType || "Pending"}
+                        {item.alertType || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.sim === 1
-                          ? "Jio"
-                          : item.sim === 2
-                          ? "Airtel"
-                          : item.sim === 3
-                          ? "BSNL"
-                          : "Other"}
+                        {item.network || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.region}
+                        {item.location || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {item.lat} | {item.lon}
+                        Lat: {item.latitude || "N/A"}, Lon:{" "}
+                        {item.longitude || "N/A"}
                       </TableCell>
                       <TableCell className="p-2 text-sm">
-                        {new Date(item.logoResult.ts * 1000).toLocaleString()}
+                        {item.timestamp
+                          ? new Date(item.timestamp * 1000).toLocaleString()
+                          : "N/A"}
                       </TableCell>
                     </TableRow>
                   ))}

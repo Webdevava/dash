@@ -37,7 +37,6 @@ import {
 import ConfigFilterForm from "@/components/meter-management/ConfigFilterForm";
 import ConfigHistoryForm from "@/components/meter-management/ConfigHistoryForm";
 import MeterEventsForm from "@/components/meter-management/MeterEventsForm";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const Page = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -104,7 +103,7 @@ const Page = () => {
     const formattedVersion = version ? version : "";
     console.log("Selected Rows:", selectedRows);
     try {
-      const response = await fetch(`${API_URL}/mqtt/publish`, {
+      const response = await fetch("https://api.inditronics.com/mqtt/publish", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +133,7 @@ const Page = () => {
     try {
       // Call the API endpoint to send data to MQTT topic
       const response = await axios.post(
-        `${API_URL}/mqtt/factory-reset`,
+        "http://localhost:5000/mqtt/factory-reset",
         {
           message: 1,
         }
@@ -152,7 +151,7 @@ const Page = () => {
 
   const refreshTable = async () => {
     try {
-      const response = await fetch(`${API_URL}/search/all`);
+      const response = await fetch("https://api.inditronics.com/search/all");
       const newData = await response.json();
       setData(newData);
       setEventsData(newData);
@@ -165,7 +164,7 @@ const Page = () => {
   const handleInputSearch = async () => {
     try {
       const response = await fetch(
-        `${API_URL}/search/self-installation?deviceId=${searchInput}`
+        `http://localhost:5000/search/self-installation?deviceId=${searchInput}`
       );
       const newData = await response.json();
       setInstallationData([newData]);
@@ -177,7 +176,7 @@ const Page = () => {
   const fetchData = async (deviceIdMin, deviceIdMax) => {
     try {
       const response = await fetch(
-        `${API_URL}/search/all?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
+        `https://api.inditronics.com/search/all?deviceIdMin=${deviceIdMin}&deviceIdMax=${deviceIdMax}`
       );
       const data = await response.json();
       setData(data);
@@ -493,55 +492,11 @@ const Page = () => {
                                   <ChevronRight size={18} color="#2054DD" />
                                 </div>
                               </DialogTrigger>
-                              <DialogContent className="bg-white px-6 py-4">
-                                <div className="flex flex-col gap-3">
-                                  <h1 className="text-xl font-bold mb-1">
-                                    Update Config
-                                  </h1>
-                                  <div className="bg-gray-200 p-2 rounded-xl flex gap-3">
-                                    <div className="flex flex-col p-2 text-md font-semibold">
-                                      <p>Meter Id</p> {item.DEVICE_ID}
-                                    </div>
-                                    <div className="flex flex-col p-2 text-md font-semibold">
-                                      <p>Present Value</p>
-                                      <p className="text-red-700">False</p>
-                                    </div>
-                                  </div>
-                                  <div className="p-2 rounded-xl flex flex-col gap-">
-                                    <p>Change Value to</p>
-                                    <div className="flex gap-3 p-2 text-md font-semibold">
-                                      <label className="text-green-600">
-                                        <input
-                                          type="radio"
-                                          name="value"
-                                          value="true"
-                                        />{" "}
-                                        True
-                                      </label>
-                                      <label className="text-red-600">
-                                        <input
-                                          type="radio"
-                                          name="value"
-                                          value="false"
-                                        />{" "}
-                                        False
-                                      </label>
-                                    </div>
-                                  </div>
-                                  <div className="flex gap-3 items-center justify-end"></div>
-                                </div>
-                                <DialogFooter>
-                                  <DialogClose>
-                                    <button className="border text-lg text-[#2054DD] px-6 py-2 rounded-3xl">
-                                      Cancel
-                                    </button>
-                                  </DialogClose>
-                                  <DialogClose>
-                                    <button className="border text-white text-lg bg-[#2054DD] px-6 py-2 rounded-3xl">
-                                      OK
-                                    </button>
-                                  </DialogClose>
-                                </DialogFooter>
+                              <DialogContent className="bg-white p-4">
+                                <ConfigHistoryForm
+                                  DEVICE_ID={item.DEVICE_ID}
+                                  handleChange={handleConfigSearch}
+                                />
                               </DialogContent>
                             </Dialog>
                           </TableCell>

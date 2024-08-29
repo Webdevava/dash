@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
 import useStore from "@/store/useDataStore"; // Adjust the import path as needed
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const FilterForm = ({ onSearch }) => {
   const [filters, setFilters] = useState({
@@ -28,23 +29,18 @@ const FilterForm = ({ onSearch }) => {
 
   const fetchSearchResults = async () => {
     try {
-      const response = await axios.get("https://api.inditronics.com/search/latest", {
-        params: filters,
-      });
+      const response = await axios.get(
+        `${API_URL}/search/latest`,
+        {
+          params: filters,
+        }
+      );
       setSearchResults(response.data); // Save results to Zustand store
       if (onSearch) onSearch(response.data); // Optional: Call onSearch if provided
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchSearchResults();
-    }, 5000); // Fetch data every 5 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [filters]); // Dependencies array to trigger useEffect when filters change
 
   const handleSubmit = (e) => {
     e.preventDefault();
