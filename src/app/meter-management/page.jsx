@@ -322,8 +322,7 @@ const Page = () => {
                       {item.lat} / {item.lon}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {new Date(item.TS * 1000).toLocaleString()}{" "}
-                      {/* Assuming item.TS is in seconds */}
+                      {new Date(item.TS * 1000).toUTCString()}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -618,7 +617,7 @@ const Page = () => {
                           item.sim1_pass ? "bg-green-500" : "bg-red-500"
                         } text-white`}
                       >
-                        {item.sim1_pass ? "Present" : "Absent"}
+                        {item.sim1_pass ? "Available" : "Not-Available"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
@@ -627,11 +626,14 @@ const Page = () => {
                           item.sim2_pass ? "bg-green-500" : "bg-red-500"
                         } text-white`}
                       >
-                        {item.sim2_pass ? "Present" : "Absent"}
+                        {item.sim2_pass ? "Available" : "Not-Available"}
                       </span>
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {item.createdAt}
+                      {new Date(item.createdAt).toLocaleString("en-IN", {
+                        timeZone: "Asia/Kolkata",
+                        hour12: true,
+                      })}
                     </TableCell>
                   </TableRow>
                 ))}
