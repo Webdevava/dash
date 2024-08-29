@@ -1,10 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Search, EllipsisVertical } from "lucide-react";
 import L from "leaflet";
-import axios from "axios";
 
 const createCustomIcon = (color) => {
   return L.divIcon({
@@ -15,35 +14,17 @@ const createCustomIcon = (color) => {
   });
 };
 
+const staticLocation = {
+  type: "APM1",
+  lat: 18.5526,
+  lng: 73.9485,
+  color: "#20B2AA",
+};
+
 const MeterLocationMap = () => {
   const [selectedMeter, setSelectedMeter] = useState("all");
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedDropdown, setSelectedDropdown] = useState("all");
-  const [meterLocations, setMeterLocations] = useState([]);
-
-  useEffect(() => {
-    fetchLocations();
-  }, [selectedMeter]);
-
-  const fetchLocations = async () => {
-    try {
-      let endpoint = `${API_URL}/location/locations`;
-      if (selectedMeter !== "all") {
-        const hardwareVersion = selectedMeter;
-        endpoint = `${API_URL}/location/locations/hardware_version/${hardwareVersion}`;
-      }
-      const response = await axios.get(endpoint);
-      const formattedLocations = response.data.map((location) => ({
-        type: `${location.hardware_version}`,
-        lat: location.lat,
-        lng: location.lon,
-        color: getColorForMeterType(`${location.hardware_version}`),
-      }));
-      setMeterLocations(formattedLocations);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-    }
-  };
 
   const getColorForMeterType = (type) => {
     switch (type) {
@@ -57,14 +38,6 @@ const MeterLocationMap = () => {
         return "#000000";
     }
   };
-
-  const filteredLocations = meterLocations.filter((location) => {
-    return (
-      (selectedMeter === "all" || location.type === selectedMeter) &&
-      (selectedDropdown === "all" ||
-        location.type.includes(selectedDropdown.split(" ")[1]))
-    );
-  });
 
   const handleDropdownClick = () => {
     setShowDropdown(!showDropdown);
@@ -157,7 +130,7 @@ const MeterLocationMap = () => {
         </div>
       </div>
       <MapContainer
-        center={[18.5526, 73.9485]}
+        center={[staticLocation.lat, staticLocation.lng]}
         zoom={7}
         style={{
           height: "87%",
@@ -170,18 +143,15 @@ const MeterLocationMap = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {filteredLocations.map((location, index) => (
-          <Marker
-            key={index}
-            position={[location.lat, location.lng]}
-            icon={createCustomIcon(location.color)}
-          >
-            <Popup>
-              {location.type} Meter <br /> Lat: {location.lat}, Lng:{" "}
-              {location.lng}
-            </Popup>
-          </Marker>
-        ))}
+        <Marker
+          position={[staticLocation.lat, staticLocation.lng]}
+          icon={createCustomIcon(staticLocation.color)}
+        >
+          <Popup>
+            {staticLocation.type} Meter <br /> Lat: {staticLocation.lat}, Lng:{" "}
+            {staticLocation.lng}
+          </Popup>
+        </Marker>
       </MapContainer>
     </div>
   );

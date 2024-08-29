@@ -322,7 +322,7 @@ const Page = () => {
                       {item.lat} / {item.lon}
                     </TableCell>
                     <TableCell className="p-2 text-sm">
-                      {new Date(item.TS * 1000).toUTCString()}
+                      {new Date(item.TS * 1000).toLocaleString()}
                     </TableCell>
                   </TableRow>
                 ))}
