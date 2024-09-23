@@ -1,6 +1,5 @@
-"use client";
-
-import React, { useState, useEffect, useCallback, useRef } from "react";
+'use client'
+import React, { useState, useEffect, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -13,40 +12,20 @@ import {
   ReferenceLine,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const UCL = 180;
-const LCL = 120;
+const UCL = 210;
+const LCL = 190;
 const PREDICTION_POINTS = 5;
 const DATA_POINTS = 20;
-const MOVING_AVERAGE_PERIOD = 2;
 
 const roundToTwo = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
 
 const formatTime = (time) => {
   const date = new Date(time);
-  return date.toLocaleTimeString(); // Format time as HH:mm:ss
-};
-
-let currentTime = new Date();
-
-const generateDataPoint = () => {
-  const newTemp = roundToTwo(Math.random() * (UCL - LCL) + LCL);
-  const time = currentTime.getTime();
-  currentTime = new Date(currentTime.getTime() + 5000); // increment time by 5 seconds
-  return {
-    time,
-    temperature: newTemp,
-  };
+  return date.toLocaleTimeString();
 };
 
 const predictFuturePoints = (data) => {
@@ -54,126 +33,84 @@ const predictFuturePoints = (data) => {
 
   const lastTwo = data.slice(-2);
   const slope =
-    (lastTwo[1].temperature - lastTwo[0].temperature) /
-    (lastTwo[1].time - lastTwo[0].time);
-  const intercept = lastTwo[1].temperature - slope * lastTwo[1].time;
+    (lastTwo[1].Temperature - lastTwo[0].Temperature) /
+    (new Date(lastTwo[1].Timestamp).getTime() -
+      new Date(lastTwo[0].Timestamp).getTime());
+  const intercept =
+    lastTwo[1].Temperature - slope * new Date(lastTwo[1].Timestamp).getTime();
+
+  const lastTimestamp = new Date(data[data.length - 1].Timestamp).getTime();
 
   return Array.from({ length: PREDICTION_POINTS }, (_, i) => {
-    const time = data[data.length - 1].time + i + 1;
+    const time = lastTimestamp + (i + 1) * 1000;
     const predictedTemp = roundToTwo(
-      slope * time + intercept + (Math.random() - 0.5) * 10
+      slope * time + intercept + (Math.random() - 0.5) * 2
     );
     return {
-      time,
+      Timestamp: time,
+      Temperature: null,
       prediction: predictedTemp,
     };
   });
 };
 
-
-
-const calculateMovingAverage = (data, period) => {
-  return data.map((point, index, array) => {
-    if (index < period - 1) return { ...point, movingAverage: null };
-    const sum = array
-      .slice(index - period + 1, index + 1)
-      .reduce((acc, curr) => acc + curr.temperature, 0);
-    return { ...point, movingAverage: roundToTwo(sum / period) };
-  });
-};
-
-const calculateSummaryStats = (data) => {
-  const temperatures = data.map((point) => point.temperature);
-  const mean = roundToTwo(
-    temperatures.reduce((acc, curr) => acc + curr, 0) / temperatures.length
-  );
-  const sortedTemps = [...temperatures].sort((a, b) => a - b);
-  const median = roundToTwo(
-    (sortedTemps[Math.floor((temperatures.length - 1) / 2)] +
-      sortedTemps[Math.ceil((temperatures.length - 1) / 2)]) /
-      2
-  );
-  const min = Math.min(...temperatures);
-  const max = Math.max(...temperatures);
-  return { mean, median, min, max };
-};
-
 const getControlStatus = (data) => {
   const outOfControl = data.some(
-    (point) => point.temperature > UCL || point.temperature < LCL
+    (point) => point.Temperature > UCL || point.Temperature < LCL
   );
   return outOfControl ? "Out of Control" : "In Control";
 };
 
-export default function EnhancedAnalytics() {
+export default function TemperaturePredictionChart() {
   const [data, setData] = useState([]);
-  const [summaryStats, setSummaryStats] = useState({
-    mean: 0,
-    median: 0,
-    min: 0,
-    max: 0,
-  });
   const [controlStatus, setControlStatus] = useState("In Control");
-  const startTimeRef = useRef(Date.now());
+  const [isGenerating, setIsGenerating] = useState(false);
 
-const addDataPoint = useCallback(() => {
-  const currentTime = new Date(); // Use current time
-  const newPoint = generateDataPoint(currentTime);
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/data?limit=20`);
+      const result = await response.json();
+      const newData = result.data.map((item) => ({
+        ...item,
+        Timestamp: new Date(item.Timestamp).getTime(),
+        prediction: null,
+      }));
+      const predictedData = predictFuturePoints(newData);
+      setData([...newData, ...predictedData]);
+      setControlStatus(getControlStatus(newData));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, []);
 
-  if (newPoint.temperature > UCL || newPoint.temperature < LCL) {
-    toast.error("Temperature Alert", {
-      description: `Temperature (${newPoint.temperature}) is outside control limits`,
-    });
-  }
-
-  setData((currentData) => {
-    const actualData = currentData.filter(
-      (point) => point.temperature !== undefined
-    );
-    const newActualData = [...actualData, newPoint].slice(-DATA_POINTS);
-    const predictedData = predictFuturePoints(newActualData);
-    const dataWithMovingAverage = calculateMovingAverage(
-      newActualData,
-      MOVING_AVERAGE_PERIOD
-    );
-    return [...dataWithMovingAverage, ...predictedData];
-  });
-}, []);
-
-useEffect(() => {
-  const initialData = Array.from({ length: DATA_POINTS }, () =>
-    generateDataPoint()
-  );
-  const initialPredicted = predictFuturePoints(initialData);
-  const initialDataWithMovingAverage = calculateMovingAverage(
-    initialData,
-    MOVING_AVERAGE_PERIOD
-  );
-  setData([...initialDataWithMovingAverage, ...initialPredicted]);
-
-  const interval = setInterval(addDataPoint, 5000); // 5 seconds
-  return () => clearInterval(interval);
-}, [addDataPoint]);
+  const startDataGeneration = async () => {
+    try {
+      await fetch(`${API_URL}/data/generate`, { method: "POST" });
+      setIsGenerating(true);
+    } catch (error) {
+      console.error("Error starting data generation:", error);
+    }
+  };
 
   useEffect(() => {
-    const actualData = data.filter((point) => point.temperature !== undefined);
-    setSummaryStats(calculateSummaryStats(actualData));
-    setControlStatus(getControlStatus(actualData));
-  }, [data]);
+    fetchData();
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="custom-tooltip bg-background p-2 border border-border rounded shadow-md">
-          <p className="label">{`Time: ${label}s`}</p>
-          {payload[0].value && (
+          <p className="label">{`Time: ${formatTime(label)}`}</p>
+          {payload[0] && payload[0].value && (
             <p className="temp">{`Temperature: ${payload[0].value}`}</p>
           )}
           {payload[1] && payload[1].value && (
             <p className="pred">{`Prediction: ${payload[1].value}`}</p>
           )}
           {payload[2] && payload[2].value && (
-            <p className="ma">{`Moving Average: ${payload[2].value}`}</p>
+            <p className="speed">{`Conveyor Speed: ${payload[2].value}`}</p>
           )}
         </div>
       );
@@ -182,141 +119,90 @@ useEffect(() => {
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="w-full bg-white">
-        <CardHeader>
-          <CardTitle>Real-time Temperature SPC Chart with Prediction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
+    <Card className="w-full bg-white">
+      <CardHeader>
+        <CardTitle>Real-time Temperature Chart with Prediction</CardTitle>
+        <div className="flex justify-between items-center">
+          <Badge
+            variant={controlStatus === "In Control" ? "default" : "destructive"}
+          >
+            {controlStatus}
+          </Badge>
+          <Button onClick={startDataGeneration} disabled={isGenerating}>
+            {isGenerating ? "Generating Data..." : "Start Data Generation"}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="Timestamp"
+              tickFormatter={formatTime}
+              label={{
+                value: "Time",
+                position: "insideBottomRight",
+                offset: -10,
               }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                tickFormatter={(time) => {
-                  const date = new Date(time);
-                  return date.toLocaleTimeString(); // Format time as HH:mm:ss
-                }}
-                label={{
-                  value: "Time",
-                  position: "insideBottomRight",
-                  offset: -10,
-                }}
-              />
-              <YAxis
-                domain={[LCL - 20, UCL + 20]}
-                tickFormatter={(value) => roundToTwo(value)}
-                label={{
-                  value: "Temperature",
-                  angle: -90,
-                  position: "insideLeft",
-                }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <ReferenceLine
-                y={UCL}
-                label="UCL"
-                stroke="hsl(var(--destructive))"
-                strokeDasharray="3 3"
-              />
-              <ReferenceLine
-                y={LCL}
-                label="LCL"
-                stroke="hsl(var(--destructive))"
-                strokeDasharray="3 3"
-              />
-              <Line
-                type="monotone"
-                dataKey="temperature"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 8 }}
-                isAnimationActive={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="prediction"
-                stroke="hsl(var(--foreground))"
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={false}
-                isAnimationActive={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="movingAverage"
-                stroke="green"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="bg-white">
-          <CardHeader>
-            <CardTitle>Summary Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-2">
-              <div>Mean: {summaryStats.mean}</div>
-              <div>Median: {summaryStats.median}</div>
-              <div>Min: {summaryStats.min}</div>
-              <div>Max: {summaryStats.max}</div>
-            </div>
-            <div className="mt-4">
-              Control Status:
-              <Badge
-                variant={
-                  controlStatus === "In Control" ? "default" : "destructive"
-                }
-                className="ml-2"
-              >
-                {controlStatus}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-{/* 
-        <Card className="bg-white">
-          <CardHeader>
-            <CardTitle>Recent Data Points</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Temperature</TableHead>
-                  <TableHead>Moving Average</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.slice(-5).map((point, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{formatTime(point.time)}</TableCell>
-                    <TableCell>{point.temperature || "-"}</TableCell>
-                    <TableCell>{point.movingAverage || "-"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card> */}
-      </div>
-    </div>
+              reversed={true}
+              domain={["dataMin", "dataMax"]}
+            />
+            <YAxis
+              domain={[LCL - 10, UCL + 10]}
+              tickFormatter={(value) => roundToTwo(value)}
+              label={{
+                value: "Temperature",
+                angle: -90,
+                position: "insideLeft",
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <ReferenceLine
+              y={UCL}
+              label="UCL"
+              stroke="hsl(var(--destructive))"
+              strokeDasharray="3 3"
+            />
+            <ReferenceLine
+              y={LCL}
+              label="LCL"
+              stroke="hsl(var(--destructive))"
+              strokeDasharray="3 3"
+            />
+            <Line
+              type="monotone"
+              dataKey="Temperature"
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 8 }}
+              isAnimationActive={false}
+              connectNulls={true}
+            />
+            <Line
+              type="monotone"
+              dataKey="prediction"
+              stroke="hsl(var(--foreground))"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={false}
+              isAnimationActive={false}
+              connectNulls={true}
+            />
+            
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 }

@@ -39,6 +39,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Toaster, toast } from "sonner";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const LCL = 2;
 const UCL = 100;
 const ALERTS_PER_PAGE = 5;
@@ -54,7 +56,7 @@ export default function SensorData() {
   const [alertsPage, setAlertsPage] = useState(1);
 
   const fetchData = async () => {
-    let url = `http://localhost:5000/mqtt/sensor-data?page=${currentPage}&limit=5`;
+    let url = `${API_URL}/mqtt/sensor-data?page=${currentPage}&limit=5`;
     if (startDate && endDate) {
       url += `&startTime=${startDate.toISOString()}&endTime=${endDate.toISOString()}`;
     }

@@ -4,6 +4,7 @@ import SPC from "@/components/SPC";
 import SensorData from "@/components/SensorData";
 import Analytics from "@/components/Analytics";
 import Proximity from "@/components/Proximity";
+import TempData from "@/components/TempData";
 
 const MeterStatistics = dynamic(() => import("@/components/MeterStatistics"), {
   ssr: false,
@@ -59,6 +60,7 @@ const Page = () => {
           <TabsContent value="analytics">
             <div className="p-4">
               <h2 className="text-2xl font-bold mb-4">Analytics</h2>
+              <TempData/>
               <Analytics />
             </div>
           </TabsContent>

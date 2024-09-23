@@ -22,6 +22,7 @@ import {
 } from "recharts";
 import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Proximity() {
   const [proximityData, setProximityData] = useState([]);
@@ -29,7 +30,7 @@ export default function Proximity() {
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchData = async () => {
-    let url = `http://localhost:5000/mqtt/proximity-data?page=${currentPage}&limit=5`;
+    let url = `${API_URL}/mqtt/proximity-data?page=${currentPage}&limit=5`;
     try {
       const response = await fetch(url);
       const result = await response.json();
